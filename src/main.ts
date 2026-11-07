@@ -370,6 +370,89 @@ async function commitRename(fingerprint: string, name: string | null) {
 }
 
 // ---------------------------------------------------------------------------
+// Menú contextual propio (sustituye al de WebView2/Edge)
+// ---------------------------------------------------------------------------
+
+function closeMenu() {
+  document.querySelector(".ctx-menu")?.remove();
+}
+
+function openDeviceMenu(d: Device, x: number, y: number) {
+  closeMenu();
+  const menu = document.createElement("div");
+  menu.className = "ctx-menu";
+  menu.setAttribute("role", "menu");
+  const item = (action: string, ic: IconName, label: string) =>
+    `<button role="menuitem" data-ctx="${action}">${icon(ic)}<span>${label}</span></button>`;
+  menu.innerHTML = `
+    <div class="ctx-title">${esc(d.name)}</div>
+    ${item("rename", "edit", t("rename"))}
+    ${item("refresh", "scan", t("readNow"))}
+    ${item("copy", "root", t("copyFingerprint"))}
+    <div class="ctx-foot">${esc(d.fingerprint)}</div>`;
+  document.body.appendChild(menu);
+  // Que no se salga de la ventana.
+  const r = menu.getBoundingClientRect();
+  menu.style.left = `${Math.min(x, innerWidth - r.width - 4)}px`;
+  menu.style.top = `${Math.min(y, innerHeight - r.height - 4)}px`;
+  menu.addEventListener("click", (ev) => {
+    const action = (ev.target as HTMLElement).closest<HTMLElement>("[data-ctx]")?.dataset.ctx;
+    if (!action) return;
+    closeMenu();
+    if (action === "rename") {
+      ui.view = "devices";
+      startRename(d.fingerprint);
+    } else if (action === "refresh") void backend.refresh();
+    else if (action === "copy") void navigator.clipboard?.writeText(d.fingerprint);
+  });
+  (menu.querySelector("button") as HTMLButtonElement | null)?.focus();
+}
+
+function bindContextMenu() {
+  document.addEventListener("contextmenu", (ev) => {
+    // Nunca el menú del navegador.
+    ev.preventDefault();
+    const el = ev.target as HTMLElement;
+    if (el.closest(".ctx-menu")) return;
+    const id =
+      el.closest<HTMLElement>(".sheet")?.dataset.id ?? el.closest<HTMLElement>("[data-device]")?.dataset.device;
+    const d = id ? state.devices.find((x) => x.id === id) : undefined;
+    if (d && !ui.editing) openDeviceMenu(d, ev.clientX, ev.clientY);
+    else closeMenu();
+  });
+  document.addEventListener("mousedown", (ev) => {
+    if (!(ev.target as HTMLElement).closest(".ctx-menu")) closeMenu();
+  });
+  window.addEventListener("blur", closeMenu);
+  window.addEventListener("resize", closeMenu);
+  document.getElementById("content")?.addEventListener("scroll", closeMenu, { passive: true });
+}
+
+/** Atajos de navegador que no tienen sentido en una app (buscar, imprimir, recargar...). */
+function blockBrowserShortcuts() {
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      const k = e.key.toLowerCase();
+      const ctrl = e.ctrlKey || e.metaKey;
+      const blocked =
+        (ctrl && ["f", "g", "p", "r", "u", "j", "s", "o", "n", "t", "h"].includes(k)) ||
+        (ctrl && e.shiftKey && ["i", "c", "j", "r"].includes(k)) ||
+        k === "f3" ||
+        k === "f7" ||
+        k === "f12" ||
+        (k === "browserback" || k === "browserforward") ||
+        (e.altKey && (k === "arrowleft" || k === "arrowright"));
+      if (blocked) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    { capture: true },
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Diagnóstico HID
 // ---------------------------------------------------------------------------
 
@@ -515,7 +598,8 @@ function bindChrome() {
       e.preventDefault();
       void backend.refresh();
     } else if (e.key === "Escape") {
-      if (ui.editing) endRename();
+      if (document.querySelector(".ctx-menu")) closeMenu();
+      else if (ui.editing) endRename();
       else if (ui.view !== "devices") go("devices");
     }
   });
@@ -541,6 +625,8 @@ async function main() {
   state = await backend.getState();
   applyTheme();
   bindChrome();
+  bindContextMenu();
+  blockBrowserShortcuts();
   applyLang();
   render();
   // El backend empuja el estado tras cada sondeo o evento: aquí no hay temporizadores.

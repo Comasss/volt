@@ -1024,6 +1024,77 @@ code {
   animation: blink 700ms steps(2, jump-none) infinite;
 }
 
+/* ------------------------------------------------------- menú contextual */
+
+.ctx-menu {
+  position: fixed;
+  z-index: 50;
+  min-width: 190px;
+  max-width: 280px;
+  background: var(--bg);
+  border: 1px solid var(--ink);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  animation: ctx-in 90ms ease-out;
+}
+
+.ctx-title {
+  padding: 8px 10px 7px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ctx-menu button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  height: 28px;
+  padding: 0 10px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.ctx-menu button .ico {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+}
+
+.ctx-menu button:hover,
+.ctx-menu button:focus-visible {
+  background: var(--ink);
+  color: var(--bg);
+  outline: none;
+}
+
+.ctx-menu button:hover .ico,
+.ctx-menu button:focus-visible .ico {
+  color: var(--bg);
+}
+
+.ctx-foot {
+  padding: 6px 10px 7px;
+  border-top: 1px solid var(--line);
+  font-size: 9px;
+  color: var(--faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: text;
+}
+
+@keyframes ctx-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+
 /* -------------------------------------------------------------- scrollbar */
 
 ::-webkit-scrollbar {
