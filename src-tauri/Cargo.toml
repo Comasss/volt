@@ -1,0 +1,68 @@
+[package]
+name = "volt"
+version = "0.1.0"
+description = "Monitor de batería de periféricos inalámbricos"
+authors = ["zGqnis"]
+license = "MIT"
+edition = "2021"
+rust-version = "1.85"
+default-run = "volt"
+
+[lib]
+# Solo escritorio: no hacen falta staticlib/cdylib (son para móvil).
+name = "volt_lib"
+crate-type = ["rlib"]
+
+# Herramienta de diagnóstico: lista todas las interfaces HID (VID/PID, usage page...).
+[[bin]]
+name = "hid-list"
+path = "src/bin/hid_list.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-autostart = "2"
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hidapi = "2.6"
+log = "0.4"
+env_logger = { version = "0.11", default-features = false, features = ["auto-color", "humantime"] }
+
+[target.'cfg(windows)'.dependencies]
+# Misma versión que usa Tauri internamente: no se compila dos veces.
+windows-future = "0.2"
+
+[target.'cfg(windows)'.dependencies.windows]
+version = "0.61"
+features = [
+  "Win32_Foundation",
+  "Win32_Graphics_Dwm",
+  "Win32_System_Registry",
+  "Win32_System_Diagnostics_ToolHelp",
+  "Win32_System_Threading",
+  "Win32_Globalization",
+  "Win32_UI_Shell",
+  "Data_Xml_Dom",
+  "UI_Notifications",
+  "Win32_Devices_DeviceAndDriverInstallation",
+  "Win32_Devices_Properties",
+  "Foundation",
+  "Foundation_Collections",
+  "Devices_Bluetooth",
+  "Devices_Bluetooth_GenericAttributeProfile",
+  "Storage_Streams",
+]
+
+[profile.release]
+# Binario pequeño: menos páginas que mapear = menos RAM residente.
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+# Sin panic=abort: un provider que entra en pánico no debe tumbar la app.
+
+[profile.dev.package."*"]
+opt-level = 1

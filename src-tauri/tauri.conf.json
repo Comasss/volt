@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Volt",
+  "version": "0.1.0",
+  "identifier": "dev.volt.battery",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Volt",
+        "width": 980,
+        "height": 660,
+        "minWidth": 560,
+        "minHeight": 440,
+        "center": true,
+        "resizable": true,
+        "decorations": false,
+        "shadow": true,
+        "create": false,
+        "backgroundColor": "#F8F8F8"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "zGqnis",
+    "copyright": "© 2026 zGqnis · MIT",
+    "category": "Utility",
+    "shortDescription": "Monitor de batería de periféricos inalámbricos",
+    "longDescription": "Volt muestra la batería de ratones, teclados y auriculares inalámbricos (Logitech, Razer, Attack Shark, Redragon/Compx, Bluetooth) en una sola app de bandeja, sin las apps de los fabricantes.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" }
+    }
+  }
+}

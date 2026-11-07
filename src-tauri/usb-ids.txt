@@ -1,0 +1,1363 @@
+# Subconjunto de usb.ids (http://www.linux-usb.org/usb.ids) para Volt.
+# Licencia de los datos: GPL-2.0-or-later o BSD-3-Clause (se usa BSD-3-Clause).
+# Copyright: Stephen J. Gowdy y colaboradores de usb.ids.
+# Version: 2026.06.26
+# Date:    2026-06-26 20:34:02
+03f0	HP, Inc
+044f	ThrustMaster, Inc.
+044f:0400	HOTAS Cougar
+044f:0402	HOTAS Warthog Joystick
+044f:0404	HOTAS Warthog Throttle
+044f:044f	GP XID
+044f:0f00	Steering Wheel for Xbox
+044f:0f03	Steering Wheel for Xbox
+044f:0f07	Controller for Xbox
+044f:0f0c	Xbox Memory Unit (8MB)
+044f:0f10	Modena GT Wheel
+044f:a003	Rage 3D Game Pad
+044f:a01b	PK-GP301 Driving Wheel
+044f:a0a0	Top Gun Joystick
+044f:a0a1	Top Gun Joystick (rev2)
+044f:a0a3	Fusion Digital GamePad
+044f:a201	PK-GP201 PlayStick
+044f:b108	T-Flight Hotas X Flight Stick
+044f:b10a	T.16000M Joystick
+044f:b203	360 Modena Pro Wheel
+044f:b300	Firestorm Dual Power
+044f:b303	FireStorm Dual Analog 2
+044f:b304	Firestorm Dual Power
+044f:b307	vibrating Upad
+044f:b30b	Wireless VibrationPad
+044f:b315	Firestorm Dual Analog 3
+044f:b320	Dual Trigger gamepad PC/PS2 2.0
+044f:b323	Dual Trigger 3-in-1 (PC Mode)
+044f:b324	Dual Trigger 3-in-1 (PS3 Mode)
+044f:b326	Gamepad GP XID
+044f:b351	F16 MFD 1
+044f:b352	F16 MFD 2
+044f:b365	UbiSoft UbiConnect
+044f:b603	force feedback Wheel
+044f:b605	force feedback Racing Wheel
+044f:b651	Ferrari GT Rumble Force Wheel
+044f:b653	RGT Force Feedback Clutch Racing Wheel
+044f:b654	Ferrari GT Force Feedback Wheel
+044f:b677	T150 Racing Wheel
+044f:b678	T.Flight Rudder Pedals
+044f:b679	T-Rudder
+044f:b687	TWCS Throttle
+044f:b700	Tacticalboard
+045e	Microsoft Corp.
+045e:0009	IntelliMouse
+045e:000b	Natural Keyboard Elite
+045e:001c	Internet Keyboard Pro
+045e:001d	Natural Keyboard Pro
+045e:001e	IntelliMouse Explorer
+045e:0023	Trackball Optical
+045e:0024	Trackball Explorer
+045e:0025	IntelliEye Mouse
+045e:0026	SideWinder GamePad Pro
+045e:0027	SideWinder PnP GamePad
+045e:0029	IntelliMouse Optical
+045e:002b	Internet Keyboard Pro
+045e:002d	Internet Keyboard
+045e:0039	IntelliMouse Optical
+045e:0040	Wheel Mouse Optical
+045e:0047	IntelliMouse Explorer 3.0
+045e:0048	Office Keyboard 1.0A
+045e:0053	Optical Mouse
+045e:0059	Wireless IntelliMouse Explorer
+045e:005c	Office Keyboard (106/109)
+045e:005f	Wireless MultiMedia Keyboard
+045e:0061	Wireless MultiMedia Keyboard (106/109)
+045e:0063	Wireless Natural MultiMedia Keyboard
+045e:0065	Wireless Natural MultiMedia Keyboard (106/109)
+045e:006a	Wireless Optical Mouse (IntelliPoint)
+045e:006d	eHome Remote Control Keyboard keys
+045e:006e	MN-510 802.11b Wireless Adapter [Intersil ISL3873B]
+045e:0070	Wireless MultiMedia Keyboard
+045e:0071	Wireless MultiMedia Keyboard (106/109)
+045e:0072	Wireless Natural MultiMedia Keyboard
+045e:0073	Wireless Natural MultiMedia Keyboard (106/109)
+045e:007d	Notebook Optical Mouse
+045e:007e	Wireless Transceiver for Bluetooth
+045e:0080	Digital Media Pro Keyboard
+045e:0083	Basic Optical Mouse
+045e:0084	Basic Optical Mouse
+045e:008a	Wireless Optical Desktop Receiver 2.0A
+045e:008b	Dual Receiver Wireless Mouse (IntelliPoint)
+045e:008c	Wireless Intellimouse Explorer 2.0
+045e:0095	IntelliMouse Explorer 4.0 (IntelliPoint)
+045e:009c	Wireless Transceiver for Bluetooth 2.0
+045e:009d	Wireless Optical Desktop 3.0
+045e:00a0	eHome Infrared Receiver
+045e:00a4	Compact Optical Mouse, model 1016
+045e:00b0	Digital Media Pro Keyboard
+045e:00b4	Digital Media Keyboard 1.0A
+045e:00b9	Wireless Optical Mouse 3.0
+045e:00c2	MN-710 802.11g Wireless Adapter [Intersil ISL3886]
+045e:00cb	Basic Optical Mouse v2.0
+045e:00d1	Optical Mouse with Tilt Wheel
+045e:00d2	Notebook Optical Mouse with Tilt Wheel
+045e:00da	eHome Infrared Receiver
+045e:00db	Natural Ergonomic Keyboard 4000 V1.0
+045e:00dd	Comfort Curve Keyboard 2000 V1.0
+045e:00e1	Wireless Laser Mouse 6000 Receiver
+045e:00f6	Comfort Optical Mouse 1000
+045e:00f9	Wireless Desktop Receiver 3.1
+045e:0202	Xbox Controller
+045e:0280	Xbox Memory Unit (8MB)
+045e:0283	Xbox Communicator
+045e:0284	Xbox DVD Playback Kit
+045e:0285	Xbox Controller S
+045e:0288	Xbox Controller S Hub
+045e:0289	Xbox Controller S
+045e:028b	Xbox360 DVD Emulator
+045e:028d	Xbox360 Memory Unit 64MB
+045e:028e	Xbox360 Controller
+045e:028f	Xbox360 Wireless Controller via Plug & Charge Cable
+045e:0290	Xbox360 Performance Pipe (PIX)
+045e:0291	Xbox 360 Wireless Receiver for Windows
+045e:0292	Xbox360 Wireless Networking Adapter
+045e:029c	Xbox360 HD-DVD Drive
+045e:029d	Xbox360 HD-DVD Drive
+045e:029e	Xbox360 HD-DVD Memory Unit
+045e:02a0	Xbox360 Big Button IR
+045e:02a8	Xbox360 Wireless N Networking Adapter [Atheros AR7010+AR9280]
+045e:02ad	Xbox NUI Audio
+045e:02ae	Xbox NUI Camera
+045e:02b0	Xbox NUI Motor
+045e:02b6	Xbox360 Bluetooth Wireless Headset
+045e:02d1	Xbox One Controller
+045e:02d5	Xbox One Digital TV Tuner
+045e:02dd	Xbox One Controller (Firmware 2015)
+045e:02e0	Xbox One Wireless Controller
+045e:02e3	Xbox One Elite Controller
+045e:02e6	Xbox Wireless Adapter for Windows
+045e:02ea	Xbox One Controller
+045e:02f3	Xbox One Chatpad
+045e:02fd	Xbox One S Controller [Bluetooth]
+045e:02fe	Xbox Wireless Adapter for Windows
+045e:0707	Wireless Laser Mouse 8000
+045e:070a	Charon Bluetooth Dongle (DFU)
+045e:070f	LifeChat LX-3000 Headset
+045e:0713	Wireless Presenter Mouse 8000
+045e:0719	Xbox 360 Wireless Adapter
+045e:071f	Mouse/Keyboard 2.4GHz Transceiver V2.0
+045e:0724	SideWinder Mouse
+045e:0730	Digital Media Keyboard 3000
+045e:0734	Wireless Optical Desktop 700
+045e:0736	Sidewinder X5 Mouse
+045e:0737	Compact Optical Mouse 500
+045e:0750	Wired Keyboard 600
+045e:0752	Wired Keyboard 400
+045e:0765	Xbox360 Slim Internal Wireless Module (1400) [Marvell 88W8786U]
+045e:076c	Comfort Mouse 4500
+045e:077f	LifeChat LX-6000 Headset
+045e:0780	Comfort Curve Keyboard 3000
+045e:0797	Optical Mouse 200
+045e:0799	Surface Pro embedded keyboard
+045e:07a5	Wireless Receiver 1461C
+045e:07b2	2.4GHz Transceiver v8.0 used by mouse Wireless Desktop 900
+045e:07b6	Comfort Curve Keyboard 3000
+045e:07b9	Wired Keyboard 200
+045e:07cd	Surface Keyboard
+045e:07f8	Wired Keyboard 600 (model 1576)
+045e:0800	Wireless keyboard (All-in-One-Media)
+045e:0823	Classic IntelliMouse
+045e:082a	Pro Intellimouse
+045e:0b00	Xbox Elite Series 2 Controller (model 1797)
+045e:0b12	Xbox Controller
+045e:fff8	Keyboard
+046d	Logitech, Inc.
+046d:0082	Acer Aspire 5672 Webcam
+046d:0200	WingMan Extreme Joystick
+046d:0203	M2452 Keyboard
+046d:0242	Chillstream for Xbox 360
+046d:0301	M4848 Mouse
+046d:0401	HP PageScan
+046d:0402	NEC PageScan
+046d:040f	Logitech/Storm PageScan
+046d:0430	Mic (Cordless)
+046d:0801	QuickCam Home
+046d:0802	Webcam C200
+046d:0804	Webcam C250
+046d:0805	Webcam C300
+046d:0807	Webcam B500
+046d:0808	Webcam C600
+046d:0809	Webcam Pro 9000
+046d:080a	Portable Webcam C905
+046d:080f	Webcam C120
+046d:0810	QuickCam Pro
+046d:0819	Webcam C210
+046d:081a	Webcam C260
+046d:081b	Webcam C310
+046d:081d	HD Webcam C510
+046d:0820	QuickCam VC
+046d:0821	HD Webcam C910
+046d:0823	HD Webcam B910
+046d:0825	Webcam C270
+046d:0826	HD Webcam C525
+046d:0828	HD Webcam B990
+046d:082b	Webcam C170
+046d:082c	HD Webcam C615
+046d:082d	HD Pro Webcam C920
+046d:0830	QuickClip
+046d:0836	B525 HD Webcam
+046d:0837	BCC950 ConferenceCam
+046d:0838	BCC950 ConferenceCam audio
+046d:0839	BCC950 ConferenceCam integated hub
+046d:0840	QuickCam Express
+046d:0843	Webcam C930e
+046d:0845	ConferenceCam CC3000e Camera
+046d:0846	ConferenceCam CC3000e Speakerphone
+046d:084b	ConferenceCam Connect Video
+046d:084c	ConferenceCam Connect Audio
+046d:084e	ConferenceCam Connect
+046d:0850	QuickCam Web
+046d:0857	Logi Group Speakerphone
+046d:085c	C922 Pro Stream Webcam
+046d:085e	BRIO Ultra HD Webcam
+046d:086b	BRIO 4K Stream Edition
+046d:0870	QuickCam Express
+046d:0882	Logi Group Speakerphone
+046d:0890	QuickCam Traveler
+046d:0892	C920 HD Pro Webcam
+046d:0893	StreamCam
+046d:0894	CrystalCam
+046d:0895	QuickCam for Dell Notebooks
+046d:0896	OrbiCam
+046d:0897	QuickCam for Dell Notebooks
+046d:0899	QuickCam for Dell Notebooks
+046d:089d	QuickCam E2500 series
+046d:08a0	QuickCam IM
+046d:08a1	QuickCam IM with sound
+046d:08a2	Labtec Webcam Pro
+046d:08a3	QuickCam QuickCam Chat
+046d:08a6	QuickCam IM
+046d:08a7	QuickCam Image
+046d:08a9	Notebook Deluxe
+046d:08aa	Labtec Notebooks
+046d:08ac	QuickCam Cool
+046d:08ad	QuickCam Communicate STX
+046d:08ae	QuickCam for Notebooks
+046d:08af	QuickCam Easy/Cool
+046d:08b0	QuickCam 3000 Pro [pwc]
+046d:08b1	QuickCam Notebook Pro
+046d:08b2	QuickCam Pro 4000
+046d:08b3	QuickCam Zoom
+046d:08b4	QuickCam Zoom
+046d:08b5	QuickCam Sphere
+046d:08b9	QuickCam IM
+046d:08bd	Microphone (Pro 4000)
+046d:08c0	QuickCam Pro 3000
+046d:08c1	QuickCam Fusion
+046d:08c2	QuickCam PTZ
+046d:08c3	Camera (Notebooks Pro)
+046d:08c5	QuickCam Pro 5000
+046d:08c6	QuickCam for DELL Notebooks
+046d:08c7	QuickCam OEM Cisco VT Camera II
+046d:08c9	QuickCam Ultra Vision
+046d:08ca	Mic (Fusion)
+046d:08cb	Mic (Notebooks Pro)
+046d:08cc	Mic (PTZ)
+046d:08ce	QuickCam Pro 5000
+046d:08cf	QuickCam UpdateMe
+046d:08d0	QuickCam Express
+046d:08d7	QuickCam Communicate STX
+046d:08d8	QuickCam for Notebook Deluxe
+046d:08d9	QuickCam IM/Connect
+046d:08da	QuickCam Messenger
+046d:08dd	QuickCam for Notebooks
+046d:08e0	QuickCam Express
+046d:08e1	Labtec Webcam
+046d:08e4	C505e HD Webcam
+046d:08e5	C920 PRO HD Webcam
+046d:08f0	QuickCam Messenger
+046d:08f1	QuickCam Express
+046d:08f2	Microphone (Messenger)
+046d:08f3	QuickCam Express
+046d:08f4	Labtec Webcam
+046d:08f5	QuickCam Messenger Communicate
+046d:08f6	QuickCam Messenger Plus
+046d:0900	ClickSmart 310
+046d:0901	ClickSmart 510
+046d:0903	ClickSmart 820
+046d:0905	ClickSmart 820
+046d:0910	QuickCam Cordless
+046d:0920	QuickCam Express
+046d:0921	Labtec Webcam
+046d:0922	QuickCam Live
+046d:0928	QuickCam Express
+046d:0929	Labtec Webcam Pro
+046d:092a	QuickCam for Notebooks
+046d:092b	Labtec Webcam Plus
+046d:092c	QuickCam Chat
+046d:092d	QuickCam Express / Go
+046d:092e	QuickCam Chat
+046d:092f	QuickCam Express Plus
+046d:0950	Pocket Camera
+046d:0960	ClickSmart 420
+046d:0970	Pocket750
+046d:0990	QuickCam Pro 9000
+046d:0991	QuickCam Pro for Notebooks
+046d:0992	QuickCam Communicate Deluxe
+046d:0994	QuickCam Orbit/Sphere AF
+046d:09a1	QuickCam Communicate MP/S5500
+046d:09a2	QuickCam Communicate Deluxe/S7500
+046d:09a4	QuickCam E 3500
+046d:09a5	Quickcam 3000 For Business
+046d:09a6	QuickCam Vision Pro
+046d:09b0	Acer OrbiCam
+046d:09b2	Fujitsu Webcam
+046d:09c0	QuickCam for Dell Notebooks Mic
+046d:09c1	QuickCam Deluxe for Notebooks
+046d:0a01	USB Headset
+046d:0a02	Premium Stereo USB Headset 350
+046d:0a03	Logitech USB Microphone
+046d:0a04	V20 portable speakers (USB powered)
+046d:0a07	Z-10 Speakers
+046d:0a0b	ClearChat Pro USB
+046d:0a0c	Clear Chat Comfort USB Headset
+046d:0a10	V10 Notebook Speakers
+046d:0a13	Z-5 Speakers
+046d:0a14	USB Headset
+046d:0a15	G35 Headset
+046d:0a17	G330 Headset
+046d:0a1f	G930
+046d:0a23	Laptop Speaker Z305
+046d:0a29	H600 [Wireless Headset]
+046d:0a37	USB Headset H540
+046d:0a38	Headset H340
+046d:0a44	Headset H390
+046d:0a45	960 Headset
+046d:0a4d	G430 Surround Sound Gaming Headset
+046d:0a4f	MINI BOOM
+046d:0a5b	G933 Wireless Headset Dongle
+046d:0a5d	G933 Headset Battery Charger
+046d:0a66	[G533 Wireless Headset Dongle]
+046d:0a8f	H390 headset with microphone
+046d:0a90	Zone Receiver
+046d:0aaa	Logitech G PRO X Gaming Headset
+046d:0ac4	G535 Wireless Gaming Headset
+046d:0b02	C-UV35 [Bluetooth Mini-Receiver] (HID proxy mode)
+046d:8801	Video Camera
+046d:b014	Bluetooth Mouse M336/M337/M535
+046d:b305	BT Mini-Receiver
+046d:bfe4	Premium Optical Wheel Mouse
+046d:c000	N43 [Pilot Mouse]
+046d:c001	N48/M-BB48/M-UK96A [FirstMouse Plus]
+046d:c002	M-BA47 [MouseMan Plus]
+046d:c003	MouseMan
+046d:c004	WingMan Gaming Mouse
+046d:c005	WingMan Gaming Wheel Mouse
+046d:c00b	MouseMan Wheel
+046d:c00c	Optical Wheel Mouse
+046d:c00d	MouseMan Wheel+
+046d:c00e	M-BJ58/M-BJ69 Optical Wheel Mouse
+046d:c00f	MouseMan Traveler/Mobile
+046d:c011	Optical MouseMan
+046d:c012	Mouseman Dual Optical
+046d:c014	Corded Workstation Mouse
+046d:c015	Corded Workstation Mouse
+046d:c016	Optical Wheel Mouse
+046d:c018	Optical Wheel Mouse
+046d:c019	Optical Tilt Wheel Mouse
+046d:c01a	M-BQ85 Optical Wheel Mouse
+046d:c01b	MX310 Optical Mouse
+046d:c01c	Optical Mouse
+046d:c01d	MX510 Optical Mouse
+046d:c01e	MX518 Optical Mouse
+046d:c024	MX300 Optical Mouse
+046d:c025	MX500 Optical Mouse
+046d:c030	iFeel Mouse
+046d:c031	iFeel Mouse+
+046d:c032	MouseMan iFeel
+046d:c033	iFeel MouseMan+
+046d:c034	MouseMan Optical
+046d:c035	Mouse
+046d:c036	Mouse
+046d:c037	Mouse
+046d:c038	Mouse
+046d:c03d	M-BT96a Pilot Optical Mouse
+046d:c03e	Premium Optical Wheel Mouse (M-BT58)
+046d:c03f	M-BT85 [UltraX Optical Mouse]
+046d:c040	Corded Tilt-Wheel Mouse
+046d:c041	G5 Laser Mouse
+046d:c042	G3 Laser Mouse
+046d:c043	MX320/MX400 Laser Mouse
+046d:c044	LX3 Optical Mouse
+046d:c045	Optical Mouse
+046d:c046	RX1000 Laser Mouse
+046d:c047	Laser Mouse M-UAL120
+046d:c048	G9 Laser Mouse
+046d:c049	G5 Laser Mouse
+046d:c050	RX 250 Optical Mouse
+046d:c051	G3 (MX518) Optical Mouse
+046d:c053	Laser Mouse
+046d:c054	Bluetooth mini-receiver
+046d:c058	M115 Mouse
+046d:c05a	M90/M100 Optical Mouse
+046d:c05b	M-U0004 810-001317 [B110 Optical USB Mouse]
+046d:c05d	Optical Mouse
+046d:c05f	M115 Optical Mouse
+046d:c061	RX1500 Laser Mouse
+046d:c062	M-UAS144 [LS1 Laser Mouse]
+046d:c063	DELL Laser Mouse
+046d:c064	M110 corded optical mouse (M-B0001)
+046d:c066	G9x Laser Mouse
+046d:c068	G500 Laser Mouse
+046d:c069	M-U0007 [Corded Mouse M500]
+046d:c06a	USB Optical Mouse
+046d:c06b	G700 Wireless Gaming Mouse
+046d:c06c	Optical Mouse
+046d:c077	Mouse
+046d:c07c	M-R0017 [G700s Rechargeable Gaming Mouse]
+046d:c07d	G502 Mouse
+046d:c07e	G402 Gaming Mouse
+046d:c080	G303 Gaming Mouse
+046d:c083	G403 Prodigy Gaming Mouse
+046d:c084	G203 Gaming Mouse
+046d:c088	G Pro Wireless gaming mouse (wired mode)
+046d:c08b	G502 SE HERO Gaming Mouse
+046d:c08e	G MX518 Gaming Mouse (MU0053)
+046d:c092	G102/G203 LIGHTSYNC Gaming Mouse
+046d:c093	M500s Optical Mouse
+046d:c09d	G102 LIGHTSYNC Gaming Mouse
+046d:c101	UltraX Media Remote
+046d:c110	Harmony 785/880/885 Remote
+046d:c111	Harmony 525 Remote
+046d:c112	Harmony 890 Remote
+046d:c11f	Harmony 900/1100 Remote
+046d:c121	Harmony One Remote
+046d:c122	Harmony 650/700 Remote
+046d:c124	Harmony 300/350 Remote
+046d:c125	Harmony 200 Remote
+046d:c126	Harmony Link
+046d:c129	Harmony Hub
+046d:c12b	Harmony Touch/Ultimate Remote
+046d:c201	WingMan Extreme Joystick with Throttle
+046d:c202	WingMan Formula
+046d:c207	WingMan Extreme Digital 3D
+046d:c208	WingMan Gamepad Extreme
+046d:c209	WingMan Gamepad
+046d:c20a	WingMan RumblePad
+046d:c20b	WingMan Action Pad
+046d:c20c	WingMan Precision
+046d:c20d	WingMan Attack 2
+046d:c20e	WingMan Formula GP
+046d:c211	iTouch Cordless Receiver
+046d:c212	WingMan Extreme Digital 3D
+046d:c213	J-UH16 (Freedom 2.4 Cordless Joystick)
+046d:c214	ATK3 (Attack III Joystick)
+046d:c215	Extreme 3D Pro
+046d:c216	F310 Gamepad [DirectInput Mode]
+046d:c218	F510 Gamepad [DirectInput Mode]
+046d:c219	F710 Gamepad [DirectInput Mode]
+046d:c21a	Precision Gamepad
+046d:c21c	G13 Advanced Gameboard
+046d:c21d	F310 Gamepad [XInput Mode]
+046d:c21e	F510 Gamepad [XInput Mode]
+046d:c21f	F710 Wireless Gamepad [XInput Mode]
+046d:c221	G11/G15 Keyboard / Keyboard
+046d:c222	G15 Keyboard / LCD
+046d:c223	G11/G15 Keyboard / USB Hub
+046d:c225	G11/G15 Keyboard / G keys
+046d:c226	G15 Refresh Keyboard
+046d:c227	G15 Refresh Keyboard
+046d:c228	G19 Gaming Keyboard
+046d:c229	G19 Gaming Keyboard Macro Interface
+046d:c22a	Gaming Keyboard G110
+046d:c22b	Gaming Keyboard G110 G-keys
+046d:c22d	G510 Gaming Keyboard
+046d:c22e	G510 Gaming Keyboard onboard audio
+046d:c231	G13 Virtual Mouse
+046d:c232	Gaming Virtual Keyboard
+046d:c245	G400 Optical Mouse
+046d:c246	Gaming Mouse G300
+046d:c247	G100S Optical Gaming Mouse
+046d:c248	G105 Gaming Keyboard
+046d:c24a	G600 Gaming Mouse
+046d:c24c	G400s Optical Mouse
+046d:c24d	G710 Gaming Keyboard
+046d:c24e	G500s Laser Gaming Mouse
+046d:c24f	G29 Driving Force Racing Wheel [PS3]
+046d:c251	GamePanel for Dell XPS M1730
+046d:c260	G29 Driving Force Racing Wheel [PS4]
+046d:c262	G920 Driving Force Racing Wheel
+046d:c281	WingMan Force
+046d:c283	WingMan Force 3D
+046d:c285	WingMan Strike Force 3D
+046d:c286	Force 3D Pro
+046d:c287	Flight System G940
+046d:c291	WingMan Formula Force
+046d:c293	WingMan Formula Force GP
+046d:c294	Driving Force
+046d:c295	Momo Force Steering Wheel
+046d:c298	Driving Force Pro
+046d:c299	G25 Racing Wheel
+046d:c29a	Driving Force GT
+046d:c29b	G27 Racing Wheel
+046d:c29c	Speed Force Wireless Wheel for Wii
+046d:c2a0	Wingman Force Feedback Mouse
+046d:c2a1	WingMan Force Feedback Mouse
+046d:c2ab	G13 Joystick
+046d:c301	iTouch Keyboard
+046d:c302	iTouch Pro Keyboard
+046d:c303	iTouch Keyboard
+046d:c305	Internet Keyboard
+046d:c307	Internet Keyboard
+046d:c308	Internet Navigator Keyboard
+046d:c309	Y-BF37 [Internet Navigator Keyboard]
+046d:c30a	iTouch Composite
+046d:c30b	NetPlay Keyboard
+046d:c30c	Internet Keys (X)
+046d:c30d	Internet Keys
+046d:c30e	UltraX Keyboard (Y-BL49)
+046d:c30f	Logicool HID-Compliant Keyboard (106 key)
+046d:c311	Y-UF49 [Internet Pro Keyboard]
+046d:c312	DeLuxe 250 Keyboard
+046d:c313	Internet 350 Keyboard
+046d:c315	Classic Keyboard 200
+046d:c316	HID-Compliant Keyboard
+046d:c317	Wave Corded Keyboard
+046d:c318	Illuminated Keyboard
+046d:c31a	Comfort Wave 450
+046d:c31b	Compact Keyboard K300
+046d:c31c	Keyboard K120
+046d:c31d	Media Keyboard K200
+046d:c31f	Comfort Keyboard K290
+046d:c326	Washable Keyboard K310
+046d:c328	Corded Keyboard K280e
+046d:c32b	G910 Orion Spark Mechanical Keyboard
+046d:c332	G502 Proteus Spectrum Optical Mouse
+046d:c335	G910 Orion Spectrum Mechanical Keyboard
+046d:c336	G213 Prodigy Gaming Keyboard
+046d:c33a	G413 Gaming Keyboard
+046d:c33e	G915 Mechanical Keyboard
+046d:c33f	G815 Mechanical Keyboard
+046d:c401	TrackMan Marble Wheel
+046d:c402	Marble Mouse (2-button)
+046d:c403	Turbo TrackMan Marble FX
+046d:c404	TrackMan Wheel
+046d:c408	Marble Mouse (4-button)
+046d:c501	Cordless Mouse Receiver
+046d:c502	Cordless Mouse & iTouch Keys
+046d:c503	Cordless Mouse+Keyboard Receiver
+046d:c504	Cordless Mouse+Keyboard Receiver
+046d:c505	Cordless Mouse+Keyboard Receiver
+046d:c506	MX700 Cordless Mouse Receiver
+046d:c508	Cordless Trackball
+046d:c509	Cordless Keyboard & Mouse
+046d:c50a	Cordless Mouse
+046d:c50b	Cordless Desktop Optical
+046d:c50c	Cordless Desktop S510
+046d:c50d	Cordless Mouse
+046d:c50e	Cordless Mouse Receiver
+046d:c510	Cordless Mouse
+046d:c512	LX-700 Cordless Desktop Receiver
+046d:c513	MX3000 Cordless Desktop Receiver
+046d:c514	Cordless Mouse
+046d:c515	Cordless 2.4 GHz Presenter Presentation remote control
+046d:c517	LX710 Cordless Desktop Laser
+046d:c518	MX610 Laser Cordless Mouse
+046d:c51a	MX Revolution/G7 Cordless Mouse
+046d:c51b	V220 Cordless Optical Mouse for Notebooks
+046d:c521	Cordless Mouse Receiver
+046d:c525	MX Revolution Cordless Mouse
+046d:c526	Nano Receiver
+046d:c529	Logitech Keyboard + Mice
+046d:c52b	Unifying Receiver
+046d:c52d	R700 Remote Presenter receiver
+046d:c52e	MK260 Wireless Combo Receiver
+046d:c52f	Nano Receiver
+046d:c531	C-U0007 [Unifying Receiver]
+046d:c532	Unifying Receiver
+046d:c534	Nano Receiver
+046d:c537	Cordless Mouse Receiver
+046d:c539	Lightspeed Receiver
+046d:c53a	PowerPlay Wireless Charging System
+046d:c53d	G631 Keyboard
+046d:c542	M185 compact wireless mouse
+046d:c548	Logi Bolt Receiver
+046d:c603	3Dconnexion Spacemouse Plus XT
+046d:c605	3Dconnexion CADman
+046d:c606	3Dconnexion Spacemouse Classic
+046d:c621	3Dconnexion Spaceball 5000
+046d:c623	3Dconnexion Space Traveller 3D Mouse
+046d:c625	3Dconnexion Space Pilot 3D Mouse
+046d:c626	3Dconnexion Space Navigator 3D Mouse
+046d:c627	3Dconnexion Space Explorer 3D Mouse
+046d:c628	3Dconnexion Space Navigator for Notebooks
+046d:c629	3Dconnexion SpacePilot Pro 3D Mouse
+046d:c62b	3Dconnexion Space Mouse Pro
+046d:c640	NuLOOQ navigator
+046d:c702	Cordless Presenter
+046d:c703	Elite Keyboard Y-RP20 + Mouse MX900 (Bluetooth)
+046d:c704	diNovo Wireless Desktop
+046d:c705	MX900 Bluetooth Wireless Hub (C-UJ16A)
+046d:c707	Bluetooth wireless hub
+046d:c708	Bluetooth wireless hub
+046d:c709	BT Mini-Receiver (HCI mode)
+046d:c70a	MX5000 Cordless Desktop
+046d:c70b	BT Mini-Receiver (HID proxy mode)
+046d:c70c	BT Mini-Receiver (HID proxy mode)
+046d:c70d	Bluetooth wireless hub
+046d:c70e	MX1000 Bluetooth Laser Mouse
+046d:c70f	Bluetooth wireless hub
+046d:c712	Bluetooth wireless hub
+046d:c714	diNovo Edge Keyboard
+046d:c715	Bluetooth wireless hub
+046d:c71a	Bluetooth wireless hub
+046d:c71d	Bluetooth wireless hub
+046d:c71f	diNovo Mini Wireless Keyboard
+046d:c720	Bluetooth wireless hub
+046d:ca03	MOMO Racing
+046d:ca04	Formula Vibration Feedback Wheel
+046d:ca84	Cordless Controller for Xbox
+046d:ca88	Thunderpad for Xbox
+046d:ca8a	Precision Vibration Feedback Wheel for Xbox
+046d:caa3	DriveFX Racing Wheel
+046d:cab1	Cordless Keyboard for Wii HID Receiver
+046d:d001	QuickCam Pro
+046d:f301	Controller
+047f	Plantronics, Inc.
+047f:0101	Bulk Driver
+047f:02ee	BT600
+047f:0301	Bulk Driver
+047f:0411	Savi Office Base Station
+047f:0ca1	USB DSP v4 Audio Interface
+047f:4254	BUA-100 Bluetooth Adapter
+047f:aa05	DA45
+047f:ac01	Savi 7xx
+047f:ad01	GameCom 777 5.1 Headset
+047f:af00	DA70
+047f:af01	DA80
+047f:c008	Audio 655 DSP
+047f:c00e	Blackwire C310 headset
+047f:c03b	HD1
+047f:c053	Blackwire C5220 headset (remote control and 3.5mm audio adapter)
+047f:c056	Blackwire C3220 Headset
+047f:ca01	Calisto 800 Series
+047f:da60	DA60
+054c	Sony Corp.
+054c:0268	Batoh Device / PlayStation 3 Controller
+054c:03d5	PlayStation Move motion controller
+054c:042f	PlayStation Move navigation controller
+054c:05c4	DualShock 4 [CUH-ZCT1x]
+054c:0884	MDR-ZX770BN [Wireless Noise Canceling Stereo Headset]
+054c:09cc	DualShock 4 [CUH-ZCT2x]
+054c:0ba0	Dualshock4 Wireless Adaptor
+054c:0bb5	Headset MDR-1000X
+054c:0cda	PlayStation Classic controller
+054c:0ce6	DualSense wireless controller (PS5)
+054c:0df2	DualSense Edge wireless controller (PS5)
+057e	Nintendo Co., Ltd
+057e:0306	Wii Remote Controller RVL-003
+057e:0337	Wii U GameCube Controller Adapter
+057e:2006	Joy-Con L
+057e:2007	Joy-Con R
+057e:2009	Switch Pro Controller
+057e:200e	Joy-Con Charging Grip
+05ac	Apple, Inc.
+05ac:0201	USB Keyboard [Alps or Logitech, M2452]
+05ac:0202	Keyboard [ALPS]
+05ac:0205	Extended Keyboard [Mitsumi]
+05ac:0206	Extended Keyboard [Mitsumi]
+05ac:020b	Pro Keyboard [Mitsumi, A1048/US layout]
+05ac:020c	Extended Keyboard [Mitsumi]
+05ac:020d	Pro Keyboard [Mitsumi, A1048/JIS layout]
+05ac:020e	Internal Keyboard/Trackpad (ANSI)
+05ac:020f	Internal Keyboard/Trackpad (ISO)
+05ac:0214	Internal Keyboard/Trackpad (ANSI)
+05ac:0215	Internal Keyboard/Trackpad (ISO)
+05ac:0216	Internal Keyboard/Trackpad (JIS)
+05ac:0217	Internal Keyboard/Trackpad (ANSI)
+05ac:0218	Internal Keyboard/Trackpad (ISO)
+05ac:0219	Internal Keyboard/Trackpad (JIS)
+05ac:021a	Internal Keyboard/Trackpad (ANSI)
+05ac:021b	Internal Keyboard/Trackpad (ISO)
+05ac:021c	Internal Keyboard/Trackpad (JIS)
+05ac:021d	Aluminum Mini Keyboard (ANSI)
+05ac:021e	Aluminum Mini Keyboard (ISO)
+05ac:021f	Aluminum Mini Keyboard (JIS)
+05ac:0220	Aluminum Keyboard (ANSI)
+05ac:0221	Aluminum Keyboard (ISO)
+05ac:0222	Aluminum Keyboard (JIS)
+05ac:0223	Internal Keyboard/Trackpad (ANSI)
+05ac:0224	Internal Keyboard/Trackpad (ISO)
+05ac:0225	Internal Keyboard/Trackpad (JIS)
+05ac:0229	Internal Keyboard/Trackpad (ANSI)
+05ac:022a	Internal Keyboard/Trackpad (MacBook Pro) (ISO)
+05ac:022b	Internal Keyboard/Trackpad (MacBook Pro) (JIS)
+05ac:0230	Internal Keyboard/Trackpad (MacBook Pro 4,1) (ANSI)
+05ac:0231	Internal Keyboard/Trackpad (MacBook Pro 4,1) (ISO)
+05ac:0232	Internal Keyboard/Trackpad (MacBook Pro 4,1) (JIS)
+05ac:0236	Internal Keyboard/Trackpad (ANSI)
+05ac:0237	Internal Keyboard/Trackpad (ISO)
+05ac:0238	Internal Keyboard/Trackpad (JIS)
+05ac:023f	Internal Keyboard/Trackpad (ANSI)
+05ac:0240	Internal Keyboard/Trackpad (ISO)
+05ac:0241	Internal Keyboard/Trackpad (JIS)
+05ac:0242	Internal Keyboard/Trackpad (ANSI)
+05ac:0243	Internal Keyboard/Trackpad (ISO)
+05ac:0244	Internal Keyboard/Trackpad (JIS)
+05ac:0245	Internal Keyboard/Trackpad (ANSI)
+05ac:0246	Internal Keyboard/Trackpad (ISO)
+05ac:0247	Internal Keyboard/Trackpad (JIS)
+05ac:024a	Internal Keyboard/Trackpad (MacBook Air) (ISO)
+05ac:024d	Internal Keyboard/Trackpad (MacBook Air) (ISO)
+05ac:024f	Aluminium Keyboard (ANSI)
+05ac:0250	Aluminium Keyboard (ISO)
+05ac:0252	Internal Keyboard/Trackpad (ANSI)
+05ac:0253	Internal Keyboard/Trackpad (ISO)
+05ac:0254	Internal Keyboard/Trackpad (JIS)
+05ac:0259	Internal Keyboard/Trackpad
+05ac:025a	Internal Keyboard/Trackpad
+05ac:0263	Apple Internal Keyboard / Trackpad (MacBook Retina)
+05ac:0267	Magic Keyboard A1644
+05ac:0269	Magic Mouse 2 (Lightning connector)
+05ac:0273	Internal Keyboard/Trackpad (ISO)
+05ac:0301	USB Mouse [Mitsumi, M4848]
+05ac:0302	Optical Mouse [Fujitsu]
+05ac:0304	Mighty Mouse [Mitsumi, M1152]
+05ac:0306	Optical USB Mouse [Fujitsu]
+05ac:030a	Internal Trackpad
+05ac:030b	Internal Trackpad
+05ac:030d	Magic Mouse
+05ac:030e	MC380Z/A [Magic Trackpad]
+05ac:1001	Keyboard Hub [ALPS]
+05ac:1002	Extended Keyboard Hub [Mitsumi]
+05ac:1003	Hub in Pro Keyboard [Mitsumi, A1048]
+05ac:1006	Hub in Aluminum Keyboard
+05ac:1393	AirPods case
+05ac:820a	Bluetooth HID Keyboard
+05ac:820b	Bluetooth HID Mouse
+0738	Mad Catz, Inc.
+0738:1302	F.L.Y. 5 Flight Stick
+0738:2215	X-55 Rhino Stick
+0738:2218	Saitek Side Panel Control Deck
+0738:2237	V.1 Stick
+0738:4506	Wireless Controller
+0738:4507	XBox Device
+0738:4516	Control Pad
+0738:4520	Control Pad Pro
+0738:4522	LumiCON
+0738:4526	Control Pad Pro
+0738:4530	Universal MC2 Racing Wheel and Pedals
+0738:4536	MicroCON
+0738:4540	Beat Pad
+0738:4556	Lynx Wireless Controller
+0738:4566	XBox Device
+0738:4576	XBox Device
+0738:4586	MicroCON Wireless Controller
+0738:4588	Blaster
+0738:45ff	Beat Pad
+0738:4716	Wired Xbox 360 Controller
+0738:4718	Street Fighter IV FightStick SE for Xbox 360
+0738:4726	Xbox 360 Controller
+0738:4728	Street Fighter IV FightPad for Xbox 360
+0738:4730	MC2 Racing Wheel for Xbox 360
+0738:4736	MicroCON for Xbox 360
+0738:4738	Street Fighter IV Wired Controller for Xbox 360
+0738:4740	Beat Pad for Xbox 360
+0738:4743	Beat Pad Pro
+0738:4758	Arcade Game Stick
+0738:4a01	FightStick TE 2 for Xbox One
+0738:6040	Beat Pad Pro
+0738:8818	Street Fighter IV Arcade FightStick (PS3)
+0738:9871	Portable Drum Kit
+0738:a109	S.T.R.I.K.E.7 Keyboard
+0738:a215	X-55 Rhino Throttle
+0738:b726	Modern Warfare 2 Controller for Xbox 360
+0738:b738	Marvel VS Capcom 2 TE FightStick for Xbox 360
+0738:beef	Joytech Neo SE Advanced Gamepad
+0738:cb02	Saitek Cyborg Rumble Pad
+0738:cb03	Saitek P3200 Rumble Pad
+0738:cb29	Saitek Aviator Stick AV8R02
+0738:f738	Super Street Fighter IV FightStick TE S for Xbox 360
+0951	Kingston Technology
+0951:162b	DataTraveler HyperX 3.0
+0951:16a4	HyperX 7.1 Audio
+0951:16b3	HyperX Savage
+0951:16c4	Hyperx Cloud Flight wireless headset
+0951:16d2	HX-KB4BL1-US [HYPERX Alloy FPS Pro]
+0951:16d4	HyperX SavageEXO [0382]
+0951:16df	HyperX QuadCast
+0951:16e4	HyperX Pulsefire Raid
+0b05	ASUSTek Computer, Inc.
+0b05:17c2	ROG Spitfire
+0b0e	GN Netcom
+0b0e:0301	Jabra EVOLVE 20
+0b0e:0305	Jabra EVOLVE Link MS
+0b0e:030c	Jabra EVOLVE 65
+0b0e:0311	Jabra EVOLVE 65
+0b0e:0312	enc060:Buttons Volume up/down/mute + phone [Jabra]
+0b0e:0343	Jabra UC VOICE 150a
+0b0e:0348	Jabra UC VOICE 550a MS
+0b0e:034c	Jabra UC Voice 750 MS
+0b0e:034d	Jabra UC VOICE 750
+0b0e:0410	Jabra SPEAK 410
+0b0e:0420	Jabra SPEAK 510
+0b0e:0422	Jabra SPEAK 510 USB
+0b0e:0933	Jabra Freeway
+0b0e:094d	GN Netcom / Jabra REVO Wireless
+0b0e:1017	Jabra PRO 930
+0b0e:1022	Jabra PRO 9450, Type 9400BS (DECT Headset)
+0b0e:1041	Jabra PRO 9460
+0b0e:1900	Jabra Biz 1900
+0b0e:2007	GN 2000 Stereo Corded Headset
+0b0e:2456	Jabra SPEAK 810
+0b0e:245e	Jabra Link 370
+0b0e:248a	Jabra Elite 85h
+0b0e:24b8	Jabra Evolve2 65
+0b0e:24bb	Jabra Evolve2 85
+0b0e:24c9	Jabra Link 380
+0b0e:24ca	Jabra Link 380
+0b0e:620c	Jabra BT620s
+0b0e:9330	Jabra GN9330 Headset
+0b0e:a346	Jabra Engage 75 Stereo
+0b0e:a50a	Alienware Wireless Gaming Headset AW988
+0e6f	Logic3
+0e6f:0003	Freebird wireless Controller
+0e6f:0005	Eclipse wireless Controller
+0e6f:0006	Edge wireless Controller
+0e6f:0008	After Glow Pro Controller
+0e6f:0105	Disney's High School Musical 3 Dance Pad for Xbox 360
+0e6f:0113	Afterglow AX.1 Gamepad
+0e6f:011f	Rock Candy Wired Controller for Xbox 360
+0e6f:0128	Wireless PS3 Controller
+0e6f:0131	PDP EA Sports Controller
+0e6f:0133	Wired Controller
+0e6f:0139	Afterglow Prismatic Wired Controller for Xbox One
+0e6f:013a	PDP Xbox One Controller
+0e6f:0146	Rock Candy Wired Controller for Xbox One
+0e6f:0147	PDP Marvel Controller for Xbox One
+0e6f:015c	PDP Arcade Stick for Xbox One
+0e6f:0161	Camo Wired Controller for Xbox One
+0e6f:0162	Xbox One Wired Controller
+0e6f:0163	Legendary Collection Deliverer of Truth
+0e6f:0164	Battlefield 1 Wired Controller for Xbox One
+0e6f:0165	Titanfall 2 Wired Controller for Xbox One
+0e6f:0201	Pelican PL-3601
+0e6f:0213	Afterglow Gamepad for Xbox 360
+0e6f:021f	Rock Candy Gamepad for Xbox 360
+0e6f:0246	Rock Candy Gamepad for Xbox One
+0e6f:0301	Controller
+0e6f:0346	Rock Candy Wired Controller for Xbox One
+0e6f:0401	Controller
+0e6f:0413	Afterglow AX.1 Gamepad for Xbox 360
+0e6f:0501	Wired Controller
+0e6f:f501	Hi-TEC Essentials Wired Gamepad
+0e6f:f900	Afterglow AX.1
+0f0d	Hori Co., Ltd
+0f0d:000a	Dead or Alive 4 FightStick for Xbox 360
+0f0d:000c	Horipad EX Turbo for Xbox 360
+0f0d:000d	Fighting Stick EX2 for Xbox 360
+0f0d:0011	Real Arcade Pro 3
+0f0d:0016	Real Arcade Pro.EX for Xbox 360
+0f0d:001b	Real Aracde Pro.VX
+0f0d:0063	Real Arcade Pro Hayabusa for Xbox One
+0f0d:0067	Horipad One
+0f0d:0078	Real Arcade Pro V Kai for Xbox One / Xbox 360
+0f0d:0090	Horipad Ultimate
+0f0d:00c1	HORIPAD for Nintendo Switch
+1038	SteelSeries ApS
+1038:0100	Ideazon Zboard
+1038:1260	Arctis 7 wireless adapter
+1038:1361	Ideazon Sensei
+1038:1410	SRW-S1 [Simraceway Steering Wheel]
+1038:1720	Mouse
+10f5	Turtle Beach
+10f5:0200	Audio Advantage Roadie
+10f5:0231	Ear Force P11 Headset
+10f5:10f5	EarForce PX21 Gaming Headset
+1395	DSEA A/S
+1395:0025	Headset [PC 8]
+1395:0026	SC230
+1395:0027	SC260
+1395:0028	SC230 CTRL
+1395:0029	SC260 CTRL
+1395:002a	SC230 for Lync
+1395:002b	SC260 for Lync
+1395:002d	BTD-800
+1395:002e	Presence
+1395:0030	CEHS-CI 02
+1395:0031	U320 Gaming
+1395:0032	SC30 for Lync
+1395:0033	SC60 for Lync
+1395:0034	SC30 Control
+1395:0035	SC60 Control
+1395:0036	SC630 for Lync
+1395:0037	SC660 for Lync
+1395:0038	SC630 CTRL
+1395:0039	SC660 CTRL
+1395:003f	SP 20
+1395:0040	MB Pro 1/2
+1395:0041	SP 20 for Lync
+1395:0042	SP 10
+1395:0043	SP 10 for Lync
+1395:0046	PXC 550
+1395:004a	MOMENTUM M2 OEBT
+1395:004b	MOMENTUM M2 AEBT
+1395:004f	SC230 for MS II
+1395:0050	SC260 for MS II
+1395:0051	USB-ED CC 01
+1395:0058	USB-ED CC 01 for MS
+1395:0059	SC40 for MS
+1395:005a	SC70 for MS
+1395:005b	SC40 CTRL
+1395:005c	SC70 CTRL
+1395:0060	SCx5 MS
+1395:0061	SCx5 CTRL
+1395:0064	MB 660 MS
+1395:0065	MB 660
+1395:0066	SP 20 D UC
+1395:0067	SP 20 D MS
+1395:006b	SC6x5
+1395:0072	Headset
+1395:3556	USB Headset
+1532	Razer USA, Ltd
+1532:0001	RZ01-020300 Optical Mouse [Diamondback]
+1532:0002	Diamondback Optical Mouse
+1532:0003	Krait Mouse
+1532:0005	Boomslang CE
+1532:0007	DeathAdder Mouse
+1532:0009	Gaming Mouse [Tempest Habu]
+1532:000a	Mamba (Wired)
+1532:000c	Lachesis
+1532:000d	DiamondBack 3G
+1532:000e	Megalodon
+1532:000f	Mamba (Wireless)
+1532:0012	Gaming Mouse [Salmosa]
+1532:0013	Orochi 2011
+1532:0015	Naga Mouse
+1532:0016	DeathAdder 3.5G
+1532:0017	RZ01-0035 Laser Gaming Mouse [Imperator]
+1532:0019	Marauder
+1532:001a	Spectre
+1532:001b	Gaming Headset
+1532:001c	RZ01-0036 Optical Gaming Mouse [Abyssus]
+1532:001e	Lachesis (5600 DPI)
+1532:001f	Naga Epic (Wired)
+1532:0020	Abyssus 1800
+1532:0021	Naga Epic Dock (Wireless, Bluetooth)
+1532:0022	Gaming Mouse [TRON]
+1532:0023	Gaming Keyboard [TRON]
+1532:0024	Mamba 2012 (Wired)
+1532:0025	Mamba 2012 (Wireless)
+1532:0029	DeathAdder Black Edition
+1532:002a	Gaming Mouse [Star Wars: The Old Republic]
+1532:002b	Gaming Keyboard [Star Wars: The Old Republic]
+1532:002c	Gaming Headset [Star Wars: The Old Republic]
+1532:002e	RZ01-0058 Gaming Mouse [Naga 2012]
+1532:002f	Imperator 2012
+1532:0031	Gaming Mouse Dock [Star Wars: The Old Republic]
+1532:0032	Ouroboros 2012 (Wired)
+1532:0033	Ouroboros 2012 (Wireless)
+1532:0034	Taipan
+1532:0035	Krait 2013 Essential
+1532:0036	RZ01-0075, Gaming Mouse [Naga Hex (Red)]
+1532:0037	DeathAdder 2013
+1532:0038	DeathAdder 1800
+1532:0039	Orochi 2013
+1532:003e	Naga Epic Chroma (Wired)
+1532:003f	Naga Epic Chroma (Wireless)
+1532:0040	Naga 2014
+1532:0041	Naga Hex
+1532:0042	Abyssus 2014
+1532:0043	DeathAdder Chroma
+1532:0044	Mamba Chroma (Wired)
+1532:0045	Mamba Chroma (Wireless)
+1532:0046	Mamba 2015 Tournament Edition [RZ01-01370100-R3]
+1532:0048	Orochi 2015 (Wired)
+1532:004a	RZ03-0133 Gaming Lapboard, Keyboard Mouse Combo, Dongle [Turret Dongle]
+1532:004c	Diamondback Chroma
+1532:004d	DeathAdder 2000 (Cynosa Pro Bundle)
+1532:004f	RZ01-0145, Gaming Mouse [DeathAdder 2000 (Alternate)]
+1532:0050	Naga Hex V2
+1532:0053	Naga Chroma
+1532:0054	DeathAdder 3500
+1532:0056	Orochi 2015 (Wireless)
+1532:0059	RZ01-0212 Gaming Mouse [Lancehead (Wired)]
+1532:005a	RZ01-0212 Gaming Mouse [Lancehead (Wireless)]
+1532:005b	Abyssus V2
+1532:005c	DeathAdder Elite
+1532:005e	Abyssus 2000
+1532:005f	DeathAdder 2000
+1532:0060	RZ01-0213 Gaming Mouse [Lancehead Tournament Edition]
+1532:0062	Atheris
+1532:0064	Basilisk
+1532:0065	RZ01-0265, Gaming Mouse [Basilisk Essential]
+1532:0067	Naga Trinity
+1532:0068	Gaming Mouse Mat [Firefly Hyperflux]
+1532:0069	Gaming Mouse [Mamba Hyperflux]
+1532:006a	Abyssus Elite (D.Va Edition)
+1532:006b	Abyssus Essential
+1532:006c	Mamba Elite (Wired)
+1532:006e	DeathAdder Essential
+1532:006f	RZ01-0257 Gaming Mouse [Lancehead Wireless (2019, Wireless, Receiver)]
+1532:0070	RZ01-0257 Gaming Mouse [Lancehead Wireless (2019, Wired)]
+1532:0071	RZ01-0254 Gaming Mouse [DeathAdder Essential White Edition]
+1532:0072	Mamba 2018 (Wireless)
+1532:0073	Mamba 2018 (Wired)
+1532:0078	Viper (wired)
+1532:007a	RC30-0305 Gaming Mouse [Viper Ultimate (Wired)]
+1532:007b	RC30-0305 Gaming Mouse Dongle [Viper Ultimate (Wireless)]
+1532:007e	RC30-030502 Mouse Dock
+1532:0083	RC30-0315, Gaming Mouse [Basilisk X HyperSpeed]
+1532:0084	RZ01-0321 Gaming Mouse [DeathAdder V2]
+1532:0085	RZ01-0316 Gaming Mouse [Basilisk V2]
+1532:0086	Gaming Mouse [Basilisk Ultimate, Wired]
+1532:0088	Gaming Mouse [Basilisk Ultimate, Wireless, Receiver]
+1532:008a	RZ01-0325, Gaming Mouse [Viper Mini]
+1532:0101	Copperhead Mouse
+1532:0102	Tarantula Keyboard
+1532:0103	Gaming Keyboard [Reclusa]
+1532:0105	Gaming Keyboard [ProType]
+1532:0106	Gaming Keyboard [ProType]
+1532:0109	Lycosa Keyboard
+1532:010b	Gaming Keyboard [Arctosa]
+1532:010d	BlackWidow Ultimate 2012
+1532:010e	BlackWidow Classic (Alternate)
+1532:010f	Anansi
+1532:0110	Cyclosa
+1532:0111	Nostromo
+1532:0113	RZ07-0074 Gaming Keypad [Orbweaver]
+1532:0114	DeathStalker Ultimate
+1532:0116	Blade Pro (2015)
+1532:0118	RZ03-0080, Gaming Keyboard [Deathstalker Essential]
+1532:0119	Gaming Keyboard [Lycosa]
+1532:011a	BlackWidow Ultimate 2013
+1532:011b	BlackWidow Classic
+1532:011c	BlackWidow Tournament Edition Stealth
+1532:011d	Blade 2013
+1532:011e	Gaming Keyboard Dock [Edge Keyboard Dock]
+1532:011f	Deathstalker Essential 2014
+1532:0200	Gaming Keyboard [Reclusa]
+1532:0201	Tartarus
+1532:0202	DeathStalker Expert
+1532:0203	BlackWidow Chroma
+1532:0204	DeathStalker Chroma
+1532:0205	Blade Stealth
+1532:0207	Orbweaver Chroma keypad
+1532:0208	Tartarus Chroma
+1532:0209	BlackWidow Tournament Edition Chroma
+1532:020d	Cynosa Pro keyboard (Cynosa Pro Bundle)
+1532:020f	Blade QHD
+1532:0210	Blade Pro (Late 2016)
+1532:0211	BlackWidow Chroma (Overwatch)
+1532:0214	BlackWidow Ultimate 2016
+1532:0215	Core
+1532:0216	BlackWidow X Chroma
+1532:0217	BlackWidow X Ultimate
+1532:021a	BlackWidow X Tournament Edition Chroma
+1532:021b	Gaming Keyboard [BlackWidow X Tournament Edition]
+1532:021e	Ornata Chroma
+1532:021f	Ornata
+1532:0220	Blade Stealth (2016)
+1532:0221	RZ03-0203 Gaming Keyboard [BlackWidow Chroma V2]
+1532:0224	Blade (Late 2016)
+1532:0225	Blade Pro (2017)
+1532:0226	Huntsman Elite
+1532:0227	Huntsman
+1532:0228	BlackWidow Elite
+1532:022a	Cynosa Chroma
+1532:022b	Tartarus V2
+1532:022c	Cynosa Chroma Pro
+1532:022d	Blade Stealth (Mid 2017)
+1532:022f	Blade Pro FullHD (2017)
+1532:0232	Blade Stealth (Late 2017)
+1532:0233	Blade 15 (2018)
+1532:0234	Blade Pro 17 (2019)
+1532:0235	BlackWidow Lite (2018)
+1532:0237	BlackWidow Essential
+1532:0239	Blade Stealth (2019)
+1532:023a	Blade 15 (2019) Advanced
+1532:023b	Blade 15 (2018) Base Model
+1532:023f	RZ03-0274 Gaming Keyboard [Cynosa Lite]
+1532:0240	Blade 15 (2018) Mercury
+1532:0241	BlackWidow (2019)
+1532:0243	Huntsman Tournament Edition
+1532:0244	RZ07-0311 Gaming Keypad [Tartarus Pro]
+1532:0245	Blade 15 (Mid 2019) Mercury
+1532:0246	Blade 15 (Mid 2019) Base Model
+1532:024a	Blade Stealth (Late 2019)
+1532:024b	Gaming Laptop [Blade 15 Advanced (Late 2019)]
+1532:024c	Gaming Laptop [Blade Pro (Late 2019)]
+1532:024d	Blade 15 Studio Edition (2019)
+1532:0253	RZ09-0330, Gaming Laptop [Blade 15 Advanced (Early 2020)]
+1532:0255	RZ09-0328, Gaming Laptop [Blade 15 Base Model (2020)]
+1532:0256	RZ09--0329, Gaming Laptop [Blade Pro 17 Full HD (2020)]
+1532:025d	RZ03-0338, Gaming Keyboard [Ornata V2]
+1532:0300	RZ06-0063 Motion Sensing Controllers [Hydra]
+1532:0401	Gaming Arcade Stick [Panthera]
+1532:0501	Kraken 7.1
+1532:0502	Gaming Headset [Kraken USB]
+1532:0504	Kraken 7.1 Chroma
+1532:0506	Kraken 7.1 (Alternate Version)
+1532:0510	Kraken 7.1 V2
+1532:0511	RZ19-0229 Gaming Microphone
+1532:0514	Electra V2 USB
+1532:0517	Nommo Chroma
+1532:0518	Nommo Pro
+1532:051a	Nari Ultimate
+1532:051c	Nari (Wireless)
+1532:051d	Nari (Wired)
+1532:051e	RC30-026902, Gaming Headset [Nari Essential, Wireless, Receiver]
+1532:051f	RC30-026901, Gaming Headset [Nari Essential, Wired]
+1532:0520	Kraken Tournament Edition
+1532:0521	Kraken Kitty Edition
+1532:0527	RZ04-0318 Gaming Headset [Kraken Ultimate]
+1532:0904	R201-0282 Gaming Keyboard, Mouse Combination [Turret For Xbox One]
+1532:0a00	Atrox Arcade Stick for Xbox One
+1532:0a02	ManO'War
+1532:0a03	Wildcat
+1532:0a15	RZ06-0199, Gaming Controller [Wolverine Tournament Edition]
+1532:0c00	RZ02-0135 Hard Gaming Mouse Mat [Firefly]
+1532:0c01	Goliathus
+1532:0c02	Goliathus Extended
+1532:0c04	Firefly V2
+1532:0e03	Gaming Webcam [Kiyo]
+1532:0f03	Tiamat 7.1 V2
+1532:0f07	Chroma Mug Holder
+1532:0f08	Base Station Chroma
+1532:0f09	Chroma HDK
+1532:0f0d	Laptop Stand Chroma
+1532:0f13	Lian Li O11 Dynamic Razer Edition
+1532:0f1a	Core X Chroma
+1532:1000	Gaming Controller [Raiju]
+1532:1004	Gaming Controller [Raiju Ultimate Wired]
+1532:1007	Gaming Controller [Raiju 2 Tournament Edition (USB)]
+1532:1008	Gaming Flightstick [Panthera Evo]
+1532:1009	Gaming Controller [Raiju 2 Ultimate Edition (BT)]
+1532:100a	Gaming Controller [Raiju 2 Tournament Edition (BT)]
+1532:110d	Bootloader (Alternate)
+1532:800e	Bootloader
+17ef	Lenovo
+17ef:6007	Smartcard Keyboard
+17ef:6009	ThinkPad Keyboard with TrackPoint
+17ef:600e	Optical Mouse
+17ef:6014	Mini Wireless Keyboard N5901
+17ef:6019	M-U0025-O Mouse
+17ef:6022	Ultraslim Plus Wireless Keyboard and Mouse
+17ef:6025	ThinkPad Travel Mouse
+17ef:602d	Black Silk Keyboard
+17ef:6032	Wireless Dongle for Keyboard and Mouse
+17ef:6044	ThinkPad Laser Mouse
+17ef:6047	ThinkPad Compact Keyboard with TrackPoint
+17ef:604b	Precision Wireless Mouse
+17ef:608d	Optical Mouse
+17ef:609b	Professional Wireless Keyboard and Mouse Combo
+17ef:609c	Professional Wireless Keyboard
+17ef:b000	Virtual Keyboard and Mouse
+17ef:b003	Virtual Keyboard and Mouse / Mass Storage
+1b1c	Corsair
+1b1c:0890	Flash Padlock
+1b1c:0a00	SP2500 Speakers
+1b1c:0a60	Vengeance K60 Keyboard
+1b1c:0c04	Link Cooling Node
+1b1c:0c06	RM-Series C-Link Adapter
+1b1c:0c0a	Hydro Series H115i Liquid CPU Cooler
+1b1c:0c0b	Lighting Node Pro
+1b1c:0c0c	Lighting Node Loader
+1b1c:0c22	iCUE H150i RGB PRO XT Liquid CPU Cooler
+1b1c:1a01	Flash Voyager GT
+1b1c:1a03	Voyager 3.0
+1b1c:1a09	Voyager GT 3.0
+1b1c:1a0a	Survivor Stealth Flash Drive
+1b1c:1a0b	Flash Voyager LS
+1b1c:1a0e	Voyager GTX
+1b1c:1a14	Voyager Vega
+1b1c:1a15	Voyager Slider Flash Drive
+1b1c:1a90	Flash Voyager GT
+1b1c:1ab1	Voyager
+1b1c:1b04	Raptor K50 Keyboard
+1b1c:1b07	Vengeance K65 Gaming Keyboard
+1b1c:1b08	Vengeance K95 Keyboard
+1b1c:1b09	Vengeance K70R keyboard
+1b1c:1b11	K95 RGB Mechanical Gaming Keyboard
+1b1c:1b13	Vengeance K70RGB keyboard
+1b1c:1b20	STRAFE RGB Gaming Keyboard
+1b1c:1b2d	K95 RGB Platinum Keyboard [RGP0056]
+1b1c:1b2e	Corsair Corsair Gaming M65 Pro RGB Mouse
+1b1c:1b2f	Sabre RGB [CH-9303011-XX]
+1b1c:1b3d	Corsair Corsair Gaming K55 RGB Keyboard
+1b1c:1b5e	Harpoon Wireless Mouse
+1b1c:1b65	Harpoon Wireless Dongle
+1b1c:1c00	Controller for Corsair Link
+1b1c:1c02	AX1500i Power Supply
+1b1c:1c05	HX750i Power Supply
+1b1c:1c07	HX1000i Power Supply
+1b1c:1c08	HX1200i Power Supply
+1b1c:1c0b	RM750i Power Supply
+1b1c:1c0c	RM850i Power Supply
+1b1c:1c1a	Corsair CORSAIR Lighting Node CORE
+1d57	Xenta
+1d57:0005	Wireless Receiver (Keyboard and Mouse)
+1d57:0006	Wireless Receiver (RC Laser Pointer)
+1d57:000c	Optical Mouse
+1d57:130f	2.4Ghz wireless optical mouse receiver
+1d57:2400	Wireless Mouse Receiver
+1d57:32da	2.4GHz Receiver (Keyboard and Mouse)
+1d57:83d0	Click-mouse!
+1d57:ac01	Wireless Receiver (Keyboard and Mouse)
+1d57:ac02	ViFit Activity Tracker
+1d57:ac08	RFID Receiver (Keyboard)
+1d57:ad02	SE340D PC Remote Control
+1d57:ad03	[T3] 2.4GHz and IR Air Mouse Remote Control
+1d57:af01	AUVIO Universal Remote Receiver for PlayStation 3
+1d57:af03	Wireless Receiver
+1d57:fa20	2.4GHz Wireless Receiver (Mini Keyboard & Mouse)
+1e7d	ROCCAT
+1e7d:2c24	Pyra Mouse (wired)
+1e7d:2c2e	Lua Mouse
+1e7d:2c38	Kiro Mouse
+1e7d:2ced	Kone Mouse
+1e7d:2cee	Kova 2016 Gray Mouse
+1e7d:2cef	Kova 2016 White Mouse
+1e7d:2cf0	Kova 2016 Black Mouse
+1e7d:2cf6	Pyra Mouse (wireless)
+1e7d:2d50	Kova[+] Mouse
+1e7d:2d51	Kone[+] Mouse
+1e7d:2d5a	Savu Mouse
+1e7d:2db4	Kone Pure Optical Mouse
+1e7d:2dbe	Kone Pure Mouse
+1e7d:2dbf	Kone Pure Military Mouse
+1e7d:2dc2	Kone Pure Optical Black Mouse
+1e7d:2dcb	Kone Pure SE(L) Mouse
+1e7d:2e22	Kone XTD Mouse
+1e7d:2e23	Kone XTD Optical Mouse
+1e7d:2e27	Kone AIMO Mouse
+1e7d:2e4a	Tyon Black Mouse
+1e7d:2e4b	Tyon White Mouse
+1e7d:2e7c	Nyth Black Mouse
+1e7d:2e7d	Nyth White Mouse
+1e7d:2f76	Sova Keyboard
+1e7d:2f94	Sova MK Keyboard
+1e7d:2fa8	Suora Keyboard
+1e7d:2fc6	Skeltr Keyboard
+1e7d:2fda	Ryos MK FX Keyboard
+1e7d:30d4	Arvo Keyboard
+1e7d:3138	Ryos MK Keyboard
+1e7d:316a	Ryos TKL Keyboard
+1e7d:319c	Isku Keyboard
+1e7d:31ce	Ryos MK Glow Keyboard
+1e7d:3232	Ryos MK Pro Keyboard
+1e7d:3246	Suora FX Keyboard
+1e7d:3264	Isku FX Keyboard
+1ea7	SHARKOON Technologies GmbH
+1ea7:0030	Trust GXT 158 Orna Laser Gaming Mouse
+1ea7:0064	2.4GHz Wireless rechargeable vertical mouse [More&Better]
+1ea7:0066	[Mediatrack Edge Mini Keyboard]
+1ea7:0907	Keyboard
+1ea7:1002	Vintorez Gaming Mouse
+1ea7:2007	SHARK ZONE K30 Illuminated Gaming Keyboard
+248a	Maxxter
+248a:8366	Wireless Optical Mouse ACT-MUSW-002
+248a:8367	Telink Wireless Receiver
+24ae	Shenzhen Rapoo Technology Co., Ltd.
+24ae:0001	KX Keyboard
+24ae:0197	meva Barcode Scanner
+24ae:1813	E9260 Wireless Multi-mode Keyboard
+24ae:2000	2.4G Wireless Device Serial
+24ae:2001	5 GHz Wireless Receiver
+24ae:2003	5GHz Wireless Transceiver
+24ae:4110	Optical Gaming Mouse [V280]
+24ae:6000	Wireless Audio
+2516	Cooler Master Co., Ltd.
+2516:0003	Storm Xornet
+2516:0004	Storm QuickFire Rapid Mechanical Keyboard
+2516:0006	Storm Recon
+2516:0007	Storm Sentinel Advance II
+2516:0009	Storm Quick Fire PRO
+2516:0011	Storm Quick Fire TK 6keys
+2516:0014	Storm Quick Fire TK Nkeys
+2516:0015	Storm QuickFire Pro/Ultimate keyboard
+2516:0017	CM Storm Quick Fire Stealth
+2516:001a	Storm Quick Fire XT
+2516:0020	QuickFire Rapid-i Keyboard
+2516:0027	CM Storm Coolermaster Novatouch TKL
+2516:002d	Alcor mouse
+2516:0042	Masterkeys Lite L Combo RGB Keyboard
+2516:0044	Masterkeys Lite L Combo RGB Mouse
+2516:0046	Masterkeys PRO L
+2516:0047	MasterKeys Pro L
+2516:0055	MasterKeys L
+2516:1006	MasterCase SL600M
+2516:9494	Sirus Headset
+25a7	Areson Technology Corp
+25a7:2410	Laser mouse
+25a7:fa23	2.4G Receiver
+25a7:fa61	Elecom Co., Ltd MR-K013 Multicard Reader
+2dc8	8BitDo
+2dc8:5006	M30 Bluetooth gamepad
+2dc8:5750	Bootloader
+2dc8:6000	SF30 Pro gamepad
+2dc8:6001	SN30/SF30 Pro gamepad
+2dc8:ab11	F30 gamepad
+2dc8:ab12	N30 gamepad
+2dc8:ab20	SN30/SF30 gamepad
+2dc8:ab21	SF30 gamepad
+413c	Dell Computer Corp.
+413c:0000	DRAC 5 Virtual Keyboard and Mouse
+413c:1001	Keyboard Hub
+413c:1002	Keyboard Hub
+413c:1003	Keyboard Hub
+413c:1005	Multimedia Pro Keyboard Hub
+413c:2001	Keyboard HID Support
+413c:2002	SK-8125 Keyboard
+413c:2003	Keyboard SK-8115
+413c:2005	RT7D50 Keyboard
+413c:2010	Keyboard
+413c:2011	Multimedia Pro Keyboard
+413c:2100	SK-3106 Keyboard
+413c:2101	SK-3205 SmartCard Reader Keyboard
+413c:2105	Model L100 Keyboard
+413c:2106	QuietKey Keyboard
+413c:2107	KB212-B Quiet Key Keyboard
+413c:2113	KB216 Wired Keyboard
+413c:21d7	Dell Wireless 5560 HSPA+ Mobile Broadband Modem
+413c:2501	Keyboard and mouse dongle
+413c:3010	Optical Wheel Mouse
+413c:3012	Optical Wheel Mouse
+413c:3016	Optical 5-Button Wheel Mouse
+413c:301a	Dell MS116 Optical Mouse
+413c:301b	Universal Bluetooth Receiver
+413c:3200	Mouse
+413c:5513	WLA3310 Wireless Adapter [Intersil ISL3887]
+413c:8102	TrueMobile 1300 802.11g Wireless Adapter [Intersil ISL3880]
+413c:8103	Wireless 350 Bluetooth
+413c:8104	Wireless 1450 Dual-band (802.11a/b/g) Adapter [Intersil ISL3887]
+413c:8106	Wireless 350 Bluetooth Internal Card in
+413c:8110	Wireless 3xx Bluetooth Internal Card
+413c:8111	Wireless 3xx Bluetooth Internal Card in
+413c:8114	Wireless 5700 Mobile Broadband (CDMA EV-DO) Minicard Modem
+413c:8115	Wireless 5500 Mobile Broadband (3G HSDPA) Minicard Modem
+413c:8116	Wireless 5505 Mobile Broadband (3G HSDPA) Minicard Modem
+413c:8117	Wireless 5700 Mobile Broadband (CDMA EV-DO) Expresscard Modem
+413c:8118	Wireless 5510 Mobile Broadband (3G HSDPA) Expresscard Status Port
+413c:8123	eHome Infrared Receiver
+413c:8124	eHome Infrared Receiver
+413c:8126	Wireless 355 Bluetooth
+413c:8127	Wireless 355 Module with Bluetooth 2.0 + EDR Technology.
+413c:8128	Wireless 5700-Sprint Mobile Broadband (CDMA EV-DO) Mini-Card Status Port
+413c:8129	Wireless 5700-Telus Mobile Broadband (CDMA EV-DO) Mini-Card Status Port
+413c:8131	Wireless 360 Bluetooth 2.0 + EDR module.
+413c:8133	Wireless 5720 VZW Mobile Broadband (EVDO Rev-A) Minicard GPS Port
+413c:8134	Wireless 5720 Sprint Mobile Broadband (EVDO Rev-A) Minicard Status Port
+413c:8135	Wireless 5720 TELUS Mobile Broadband (EVDO Rev-A) Minicard Diagnostics Port
+413c:8136	Wireless 5520 Cingular Mobile Broadband (3G HSDPA) Minicard Diagnostics Port
+413c:8137	Wireless 5520 Voda L Mobile Broadband (3G HSDPA) Minicard Status Port
+413c:8138	Wireless 5520 Voda I Mobile Broadband (3G HSDPA) Minicard EAP-SIM Port
+413c:8140	Wireless 360 Bluetooth
+413c:8156	Wireless 370 Bluetooth Mini-card
+413c:8157	Integrated Keyboard
+413c:8160	Wireless 365 Bluetooth
+413c:8161	Integrated Keyboard
+413c:8171	Gobi Wireless Modem (QDL mode)
+413c:8172	Gobi Wireless Modem
+413c:8185	Gobi 2000 Wireless Modem (QDL mode)
+413c:8186	Gobi 2000 Wireless Modem
+413c:81a0	Wireless 5808 Mobile Broadband (Sierra Wireless MC7355 Mini PCIE, 4G UMTS,HSDPA,HSPA+,LTE,1xRTT,EVDO Rev A,GSM,GPRS)
+413c:81a8	Wireless 5808 Mobile Broadband (Sierra Wireless Mini PCIE, 4G UMTS,HSDPA,HSPA+,LTE,1xRTT,EVDO Rev A,GSM,GPRS)
+413c:9500	USB CP210x UART Bridge Controller [DW700]

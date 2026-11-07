@@ -1,0 +1,17 @@
+# Dependencias y builds
+node_modules/
+dist/
+src-tauri/target/
+# Esquemas que Tauri regenera al compilar
+src-tauri/gen/
+
+# Instaladores de fabricantes dejados para análisis (no se publican)
+/*.exe
+
+# Herramientas locales / editor
+.claude/
+.vscode/
+.idea/
+*.log
+Thumbs.db
+.DS_Store

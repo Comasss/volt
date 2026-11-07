@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <rect width="1024" height="1024" fill="#111111"/>
+  <!-- cuerpo -->
+  <rect x="152" y="352" width="640" height="320" fill="none" stroke="#F2F2F2" stroke-width="48"/>
+  <!-- polo -->
+  <rect x="816" y="440" width="64" height="144" fill="#F2F2F2"/>
+  <!-- segmentos -->
+  <rect x="232" y="432" width="104" height="160" fill="#F2F2F2"/>
+  <rect x="368" y="432" width="104" height="160" fill="#F2F2F2"/>
+  <rect x="504" y="432" width="104" height="160" fill="#F2F2F2"/>
+  <rect x="640" y="432" width="72" height="160" fill="#FF4F00"/>
+</svg>

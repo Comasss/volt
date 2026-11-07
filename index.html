@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volt</title>
+  </head>
+  <body>
+    <div class="app">
+      <header class="titlebar" data-tauri-drag-region>
+        <div class="brand" data-tauri-drag-region>
+          <span class="brand-mark" data-tauri-drag-region></span>
+          <span class="brand-name" data-tauri-drag-region>VOLT</span>
+          <span class="brand-sep" data-tauri-drag-region>/</span>
+          <span class="brand-sub" data-tauri-drag-region>MONITOR DE BATERÍA</span>
+          <span class="brand-ver" data-tauri-drag-region>V0.1</span>
+        </div>
+        <div class="titlebar-actions">
+          <button class="btn" id="btn-scan" title="Leer ahora todos los dispositivos"></button>
+          <button class="btn" id="btn-settings" title="Ajustes"></button>
+          <span class="tb-gap" data-tauri-drag-region></span>
+          <button class="win-btn" id="btn-min" title="Minimizar"></button>
+          <button class="win-btn win-close" id="btn-close" title="Cerrar (sigue en la bandeja)"></button>
+        </div>
+      </header>
+
+      <div class="body">
+        <aside class="tree" id="tree" aria-label="Índice de dispositivos"></aside>
+        <main class="content" id="content"></main>
+      </div>
+
+      <footer class="statusbar" id="statusbar"></footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

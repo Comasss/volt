@@ -1,0 +1,43 @@
+# Compila y prueba en cada push y pull request.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Dependencias del frontend
+        run: npm ci
+
+      - name: Frontend (tipos + build)
+        run: npm run build
+
+      - name: Tests de Rust
+        working-directory: src-tauri
+        run: cargo test --lib
+
+      - name: Compila la app y hid-list
+        working-directory: src-tauri
+        run: cargo build --bins

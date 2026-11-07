@@ -1,0 +1,5 @@
+# Saltos de línea LF en el repositorio, sea cual sea el sistema.
+* text=auto eol=lf
+*.png binary
+*.ico binary
+*.icns binary

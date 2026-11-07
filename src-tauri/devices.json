@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "notes": "Huella → nombre. La huella la calcula cada provider a partir de lo que el dispositivo dice de sí mismo. confidence: 'exact' = la huella identifica un único modelo (por defecto); 'probable' = la comparten varios modelos (PID genérico de chip) y se muestra como tal. Los nombres del usuario tienen prioridad; si no hay entrada aquí, se usa lo que informa el dispositivo y después usb.ids.",
+  "devices": [
+    { "fingerprint": "xenta:fa60", "name": "ATTACK SHARK X6 / X7", "kind": "mouse", "confidence": "probable", "source": "Driver oficial Attack Shark X6 (receptor 2.4G = 1D57:FA60) y un X7 con el mismo receptor. El ratón no informa de su modelo." },
+    { "fingerprint": "xenta:fa61", "name": "ATTACK SHARK X6 (CABLE)", "kind": "mouse", "confidence": "probable", "source": "Driver oficial Attack Shark X6: modo cable = 1D57:FA61. PID genérico del chip Xenta." },
+
+    { "fingerprint": "compx:0300000000ba", "name": "REDRAGON UCAL PRO", "kind": "keyboard", "source": "Confirmado por un usuario: receptor 3554:FA09, identificación 0x05" },
+
+    { "fingerprint": "compx:03000000021c", "name": "MCHOSE G87", "kind": "keyboard", "source": "Tabla de M HUB (myfinder-device-battery, mchose_by_keyboard.py)" },
+    { "fingerprint": "compx:030000000077", "name": "MCHOSE K99", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0300000001df", "name": "MCHOSE K99 V2", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:030000000132", "name": "MCHOSE G98", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0300000000d6", "name": "MCHOSE X75", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0a0000000003", "name": "MCHOSE G98 PRO", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0300000001c6", "name": "MCHOSE X75 V2", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:030000000115", "name": "MCHOSE G75 PRO", "kind": "keyboard", "source": "Tabla de M HUB (confirmado en myfinder#312)" },
+    { "fingerprint": "compx:0a0000000018", "name": "MCHOSE G98 V2", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0a000000002b", "name": "MCHOSE UT98", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0a0000000001", "name": "MCHOSE Z75", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0a0000000009", "name": "MCHOSE Z75S", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0300000001c7", "name": "MCHOSE KX75", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:030000000174", "name": "MCHOSE GX87", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0300000001ed", "name": "MCHOSE GX87 V2", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:030000000135", "name": "MCHOSE K87", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:030000000335", "name": "MCHOSE G75 V2", "kind": "keyboard", "source": "Tabla de M HUB" },
+    { "fingerprint": "compx:0a0000000034", "name": "MCHOSE G87 V2", "kind": "keyboard", "source": "Tabla de M HUB" },
+
+    { "fingerprint": "razer:0555", "name": "RAZER BLACKSHARK V2 PRO (2023)", "kind": "headset", "source": "openrazer#2862 / rzr" },
+    { "fingerprint": "razer:0528", "name": "RAZER BLACKSHARK V2 PRO (2020)", "kind": "headset", "source": "openrazer" }
+  ]
+}
