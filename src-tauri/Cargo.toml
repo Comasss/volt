@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Monitor de batería de periféricos inalámbricos"
 authors = ["zGqnis"]
 license = "MIT"
+repository = "https://github.com/Comasss/volt"
 edition = "2021"
 rust-version = "1.85"
 default-run = "volt"

@@ -1,5 +1,8 @@
 # VOLT · monitor de batería de periféricos
 
+[![CI](https://github.com/Comasss/volt/actions/workflows/ci.yml/badge.svg)](https://github.com/Comasss/volt/actions/workflows/ci.yml)
+[![Release](https://github.com/Comasss/volt/actions/workflows/release.yml/badge.svg)](https://github.com/Comasss/volt/releases/latest)
+
 App de bandeja para Windows 10/11 (Rust + Tauri 2) que lee la batería de ratones,
 teclados y auriculares inalámbricos sin las apps de los fabricantes.
 
