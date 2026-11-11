@@ -5,9 +5,12 @@
 //! sondeo ni ventana oculta. El callback solo manda un mensaje al gestor, que espera
 //! un momento a que el dispositivo termine de enumerarse y lee.
 
+#[cfg(windows)]
 use std::sync::OnceLock;
 
+#[cfg(windows)]
 type OnChange = Box<dyn Fn() + Send + Sync>;
+#[cfg(windows)]
 static ON_CHANGE: OnceLock<OnChange> = OnceLock::new();
 
 #[cfg(windows)]

@@ -49,6 +49,7 @@ pub fn init(icon: Option<&std::path::Path>) {
 #[cfg(not(windows))]
 pub fn init(_icon: Option<&std::path::Path>) {}
 
+#[cfg(windows)]
 fn xml_escape(s: &str) -> String {
     s.replace('&', "&amp;")
         .replace('<', "&lt;")

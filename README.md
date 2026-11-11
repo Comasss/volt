@@ -22,12 +22,28 @@ En **[Releases](../../releases/latest)** está el instalador `Volt_…_x64-setup
 - WebView2 viene con Windows 11. En Windows 10, el instalador lo descarga si falta.
 - Junto al instalador se publica `hid-list.exe`, la herramienta de diagnóstico.
 
+### Linux
+
+En la misma release están el `.deb` (Debian/Ubuntu) y el `.AppImage` (cualquier
+distribución x64), además de `hid-list-linux-x64`.
+
+Para que Volt lea los receptores USB sin `sudo`, da acceso a `/dev/hidraw*` a tu
+usuario con una regla udev y vuelve a conectar los receptores:
+
+```sh
+echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0660", TAG+="uaccess"' \
+  | sudo tee /etc/udev/rules.d/70-volt.rules
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+La batería de dispositivos Bluetooth solo se lee en Windows por ahora.
+
 ## Publicar una versión
 
 GitHub Actions lo hace todo:
 - `.github/workflows/ci.yml` compila y pasa los tests en cada push.
-- `.github/workflows/release.yml` compila el instalador y crea la *release* al subir una
-  etiqueta `vX.Y.Z`.
+- `.github/workflows/release.yml` compila el instalador de Windows y los paquetes de
+  Linux y crea la *release* al subir una etiqueta `vX.Y.Z`.
 
 Pasos:
 
