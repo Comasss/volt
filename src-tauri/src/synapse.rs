@@ -4,13 +4,18 @@
 //! proceso (0 % de CPU) y, cuando Synapse termina, llama al callback. Así Volt
 //! reajusta el auricular al momento en vez de esperar al siguiente sondeo.
 
+#[cfg(windows)]
 use std::sync::atomic::{AtomicBool, Ordering};
+#[cfg(windows)]
 use std::time::Duration;
 
+#[cfg(windows)]
 const EXE: &str = "RazerAppEngine.exe";
 /// Tras cerrarse Synapse, el auricular tarda un poco en volver a su estado propio.
+#[cfg(windows)]
 const SETTLE: Duration = Duration::from_secs(3);
 
+#[cfg(windows)]
 static WATCHING: AtomicBool = AtomicBool::new(false);
 
 /// PID del proceso principal de Synapse (Electron lanza varios), si está abierto.
