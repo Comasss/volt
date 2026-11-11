@@ -4,11 +4,13 @@
 //! - `provider`  trait `DeviceProvider` (un provider por fabricante/protocolo)
 //! - `providers` logitech (HID++), razer, compx, xenta, bluetooth (PnP + GATT), mock
 //! - `manager`   hilo de sondeo único + escuchas de eventos; publica `volt://state`
+//! - `controls`  modelo de los ajustes de cada dispositivo (DPI, luces, reposo, audio)
 //! - `names`     nombres exactos: usuario › base de datos › dispositivo › genérico
 //! - `devwatch`  aviso de Windows al enchufar/desenchufar
 //! - `tray`, `window`, `notify`, `i18n`, `settings`, `commands`
 
 pub mod commands;
+pub mod controls;
 pub mod device_ids;
 pub mod devwatch;
 pub mod hid;
@@ -76,6 +78,8 @@ pub fn run() {
             commands::refresh_now,
             commands::update_settings,
             commands::rename_device,
+            commands::device_controls,
+            commands::set_device_control,
             commands::test_notification,
             commands::hid_inventory,
             commands::quit_app,

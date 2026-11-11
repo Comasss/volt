@@ -1,4 +1,4 @@
-# VOLT · monitor de batería de periféricos
+# VOLT · batería y ajustes de periféricos
 
 [![CI](https://github.com/Comasss/volt/actions/workflows/ci.yml/badge.svg)](https://github.com/Comasss/volt/actions/workflows/ci.yml)
 [![Release](https://github.com/Comasss/volt/actions/workflows/release.yml/badge.svg)](https://github.com/Comasss/volt/releases/latest)
@@ -12,6 +12,51 @@ teclados y auriculares inalámbricos sin las apps de los fabricantes.
 - Attack Shark (receptores `1D57`).
 - Teclados con receptor Compx (Redragon, AULA, MCHOSE).
 - Cualquier dispositivo Bluetooth cuya batería conozca Windows.
+
+## Personalizar (DPI, luces, reposo, audio)
+
+Cada ficha con algo que ajustar tiene un botón **PERSONALIZAR**. Los controles los
+describe el backend leyendo el dispositivo, y tras cada cambio se **vuelve a leer**:
+lo que ves es lo que el dispositivo contesta, no lo que se le pidió.
+
+**Nada de esto se ha probado con el hardware delante.** Se ha escrito a partir de
+protocolos documentados por otros proyectos, con tests de las tramas contra sus
+vectores. Cada control lleva una etiqueta que dice cuánto se sabe:
+
+- `DOCUMENTADO`: protocolo estándar que el propio dispositivo anuncia, o verificado
+  por terceros en ese mismo modelo.
+- `MODELO HERMANO`: verificado por terceros en otro modelo de la misma familia.
+- `EXPERIMENTAL`: deducido, sin verificar en ningún hardware. Solo se puede usar
+  con *Ajustes › Controles experimentales* activado (desactivado por defecto).
+
+| Dispositivo | Ajustes | Confianza | Fuente |
+|---|---|---|---|
+| Ratones Logitech HID++ 2.0 (PRO X 2…) | DPI, tasa de sondeo, memoria interna / modo software | Documentado | [Solaar](https://github.com/pwr-Solaar/Solaar) |
+| Teclados tras receptor Compx `3554:FA09` (Redragon UCAL Pro…) | Efecto, brillo, velocidad, color de la paleta, reposo y apagado de luces | Modelo hermano | [attack_shark_x87_rs](https://github.com/thedtvn/attack_shark_x87_rs) (MIT) |
+| Ídem | Color personalizado (reescribe la tabla de paletas) | Experimental | ídem |
+| Razer BlackShark V2 Pro 2023 | Ecualizador de 10 bandas, mejora de audio | Documentado | [rzr](https://github.com/Ashesh3/razer-device-control) (MIT) |
+| Ídem | Preset de EQ (juego/música/cine), tono lateral | Experimental | deducido del mismo protocolo |
+| Ratones y teclados Razer (informe de 90 bytes) | DPI, tasa de sondeo, reposo | Experimental | [openrazer](https://github.com/openrazer/openrazer) |
+
+Detalles que conviene saber:
+
+- **Logitech.** El DPI y la tasa de sondeo suelen necesitar el *modo software*: con
+  la memoria interna manda el perfil que dejó G HUB. El ratón vuelve a su memoria al
+  apagarse, así que Volt guarda lo que pongas y lo reaplica al reconectar
+  (*Ajustes › Reaplicar al conectar*; no actúa con G HUB abierto). Los límites y el
+  paso del DPI son los que anuncia el ratón.
+- **Teclados Compx.** Solo por el receptor 2.4G (por cable usan otro transporte, sin
+  implementar). Volt nunca construye la configuración: lee el bloque de 128 bytes
+  del teclado, cambia el byte del ajuste, lo escribe y comprueba que se ha guardado.
+  Si el bloque no trae las marcas que escribe el driver del fabricante (`5A A5` y
+  `FF FF`), no se toca nada. Los nombres de los efectos son los del Attack Shark X87;
+  en otro modelo el orden puede variar. El tiempo de reposo es el del teclado entero:
+  al dormirse apaga las luces. No hay editor de color por tecla.
+- **BlackShark.** El auricular olvida el ecualizador al apagarse; se reaplica al
+  reconectar si Synapse no está abierto.
+- **Antes de fiarte**: `cargo run --bin hid-list -- --probe --controls` lee (sin
+  escribir) los ajustes de todo lo conectado. Con `RUST_LOG=volt_lib=debug` vuelca
+  además el bloque de configuración del teclado.
 
 ## Descargar
 
@@ -80,15 +125,18 @@ battery/
    └─ src/
       ├─ lib.rs               arranque, plugins, ciclo de vida
       ├─ provider.rs          trait DeviceProvider + ProviderError + Capabilities
+      ├─ controls.rs          modelo de los ajustes: Control, Kind, Value, Trust
       ├─ manager.rs           hilo de sondeo único, avisos, evento volt://state
       ├─ model.rs             DeviceInfo, BatteryReading, DeviceSnapshot…
       ├─ device_ids.rs        tabla de fabricantes y VID/PID (ampliable)
       ├─ hid.rs               enumeración HID compartida por ciclo
       ├─ providers/
       │  ├─ logitech/         HID++ 2.0 (0x1004, 0x1000, 0x1001, 0x0005)
+      │  │                    settings.rs: DPI 0x2201/0x2202, tasa 0x8060/0x8061, 0x8100
       │  ├─ razer.rs          ratones/teclados: informe de 90 bytes (experimental)
       │  ├─ razer_mxic.rs     auriculares HyperSpeed "Audio MXIC" (BlackShark V2 Pro 2023)
       │  ├─ compx.rs          receptores Compx 2.4G (Redragon, AULA, MCHOSE…)
+      │  ├─ compx_cfg.rs      iluminación y reposo de esos teclados (bloque de 128 bytes)
       │  ├─ xenta.rs          receptores 1D57 (Attack Shark X6/X7…), escucha pasiva
       │  ├─ bluetooth.rs      propiedad PnP de batería + GATT 0x180F (WinRT)
       │  └─ mock.rs           dispositivos simulados
@@ -132,6 +180,7 @@ cargo run --bin hid-list                 # todas las colecciones HID: VID:PID, u
 cargo run --bin hid-list -- 046d         # filtrar por VID
 cargo run --bin hid-list -- --paths      # con rutas de dispositivo
 cargo run --bin hid-list -- --probe      # ejecuta los providers reales una vez y muestra la lectura
+cargo run --bin hid-list -- --probe --controls   # + ajustes configurables de cada uno (solo lectura)
 $env:RUST_LOG="volt_lib=trace"; cargo run --bin hid-list -- --probe   # + tráfico en crudo
 cargo run --bin hid-list -- --desc 1532:0555        # descriptores de informe (IDs, tamaños) de cada colección
 cargo run --bin hid-list -- --sniff 3554:fa09 60    # escucha pasiva de informes de entrada durante 60 s
@@ -165,8 +214,12 @@ Salida real en este equipo:
 ## Arquitectura
 
 - **`DeviceProvider`** (síncrono): `discover()`, `battery()`, `release()` y, con
-  implementación por defecto «no soportado», `set_dpi()`, `set_lighting()` y
-  `set_polling_rate()`. Un provider por fabricante o protocolo.
+  implementación por defecto «no soportado», `capabilities()`, `controls()` (lee lo
+  ajustable y su valor) y `set_control()`. Un provider por fabricante o protocolo.
+- **Ajustes**: la interfaz pide `device_controls` / `set_device_control`; el gestor
+  los ejecuta en el mismo hilo de sondeo (nunca dos conversaciones a la vez con un
+  dispositivo), relee tras escribir y guarda en `settings.json` los valores que el
+  dispositivo olvida al apagarse.
 - **Gestor**: un único hilo que duerme en `recv_timeout(intervalo)`. Despierta por
   tiempo o por una orden (escanear, ajustes, diagnóstico). Enumera HID **una vez por
   ciclo** y lo comparte. Cada provider va dentro de `catch_unwind`, así que un fallo
@@ -285,7 +338,8 @@ Salida real en este equipo:
   el kernel (`WaitForSingleObject`, sin sondeo). Al cerrarse, Volt reajusta el auricular
   a los ~3 s, sin esperar al siguiente ciclo.
 - Si apagas y enciendes el auricular con Synapse cerrado, se corrige en el siguiente
-  sondeo (≤ intervalo). Es la única escritura que hace Volt en un dispositivo. Para
+  sondeo (≤ intervalo). Es la única escritura que hace Volt por su cuenta (el resto
+  son los ajustes que cambies en *Personalizar* y su reaplicación al reconectar). Para
   deshacerla a mano: `cargo run --bin hid-list -- --blackshark --eq-status 1`.
 
 **Compx (Redragon, AULA, MCHOSE…)**

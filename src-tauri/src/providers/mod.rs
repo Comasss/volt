@@ -13,6 +13,7 @@
 
 pub mod bluetooth;
 pub mod compx;
+pub mod compx_cfg;
 pub mod logitech;
 pub mod mock;
 pub mod razer;

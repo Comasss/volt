@@ -5,6 +5,7 @@
 //! falta un runtime async ni hilos extra por provider.
 
 use crate::hid::HidContext;
+use crate::controls::{DeviceControls, Value};
 use crate::model::{BatteryReading, DeviceInfo};
 use std::ffi::CString;
 use std::fmt;
@@ -14,8 +15,8 @@ pub struct PollContext<'a> {
     /// Enumeración HID hecha una sola vez por ciclo y compartida por todos los
     /// providers HID. `None` si hidapi no se pudo inicializar.
     pub hid: Option<&'a HidContext>,
-    /// Ajuste "BlackShark: mantener EQ sin Synapse". Es lo único que escribe en
-    /// un dispositivo; con `false` todos los providers solo leen.
+    /// Ajuste "BlackShark: mantener EQ sin Synapse". Es lo único que se escribe
+    /// durante el sondeo; con `false`, `discover` y `battery` solo leen.
     pub razer_keep_eq: bool,
     /// El sondeo lo ha pedido el usuario (botón Escanear) o un cambio de
     /// dispositivos: los providers que espacian sus consultas deben leer ya.
@@ -76,13 +77,18 @@ pub struct ListenSpec {
     pub silence: Option<std::time::Duration>,
 }
 
-/// Qué sabe hacer un provider con un dispositivo concreto.
+/// Qué sabe hacer un provider con un dispositivo concreto, sin tocar el hardware
+/// (la lista detallada de controles la da `controls`, que sí lo lee).
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Capabilities {
     pub battery: bool,
     pub dpi: bool,
     pub lighting: bool,
     pub polling_rate: bool,
+    /// Tiempo de reposo / apagado de luces.
+    pub sleep: bool,
+    /// Ecualizador y otros ajustes de audio.
+    pub audio: bool,
 }
 
 impl Capabilities {
@@ -91,14 +97,14 @@ impl Capabilities {
         dpi: false,
         lighting: false,
         polling_rate: false,
+        sleep: false,
+        audio: false,
     };
-}
 
-/// Parámetros de iluminación para el futuro `set_lighting`.
-#[derive(Debug, Clone, Copy)]
-pub enum Lighting {
-    Off,
-    Static { r: u8, g: u8, b: u8 },
+    /// ¿Hay algo que personalizar? Decide si la ficha enseña el botón.
+    pub fn configurable(&self) -> bool {
+        self.dpi || self.lighting || self.polling_rate || self.sleep || self.audio
+    }
 }
 
 pub trait DeviceProvider {
@@ -138,36 +144,38 @@ pub trait DeviceProvider {
         None
     }
 
-    // ---- Preparado para crecer: por defecto no soportado. ----
+    // ---- Personalización: por defecto, nada. ----
 
     fn capabilities(&self, _device: &DeviceInfo) -> Capabilities {
         Capabilities::BATTERY_ONLY
     }
 
-    fn set_dpi(
+    /// Lee del dispositivo todo lo que se puede ajustar y su valor actual. Se llama
+    /// fuera del ciclo de sondeo (al abrir la ficha o tras una escritura), con los
+    /// datos que dejó el último `discover`. Después se llama a `release`.
+    fn controls(
         &mut self,
         _ctx: &PollContext,
         _device: &DeviceInfo,
-        _dpi: u32,
-    ) -> Result<(), ProviderError> {
-        Err(ProviderError::Unsupported("set_dpi".into()))
+    ) -> Result<DeviceControls, ProviderError> {
+        Err(ProviderError::Unsupported("controls".into()))
     }
 
-    fn set_lighting(
+    /// Escribe un control. No hace falta que devuelva el valor final: el gestor
+    /// vuelve a llamar a `controls` y enseña lo que contesta el dispositivo.
+    fn set_control(
         &mut self,
         _ctx: &PollContext,
         _device: &DeviceInfo,
-        _lighting: Lighting,
+        _control: &str,
+        _value: &Value,
     ) -> Result<(), ProviderError> {
-        Err(ProviderError::Unsupported("set_lighting".into()))
+        Err(ProviderError::Unsupported("set_control".into()))
     }
 
-    fn set_polling_rate(
-        &mut self,
-        _ctx: &PollContext,
-        _device: &DeviceInfo,
-        _hz: u16,
-    ) -> Result<(), ProviderError> {
-        Err(ProviderError::Unsupported("set_polling_rate".into()))
+    /// Nombre de la app del fabricante si está abierta ahora (G HUB, Synapse…).
+    /// Con ella abierta Volt no reaplica nada por su cuenta: mandaría la app.
+    fn vendor_app(&self) -> Option<&'static str> {
+        None
     }
 }

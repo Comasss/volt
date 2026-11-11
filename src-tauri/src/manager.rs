@@ -8,6 +8,7 @@
 //!   dispositivo bloqueado en la lectura (0 % de CPU) que manda `Push` al cambiar.
 //! - El resultado se publica como evento Tauri (`volt://state`) y en la bandeja.
 
+use crate::controls::{DeviceControls, SavedControls, Trust, Value};
 use crate::device_ids;
 use crate::hid::{HidContext, HidEntry};
 use crate::model::{
@@ -25,6 +26,9 @@ use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter};
+
+/// Respuesta a una petición de controles: la lista leída o el motivo del fallo.
+pub type ControlsReply = Sender<Result<DeviceControls, String>>;
 
 pub const EVENT_STATE: &str = "volt://state";
 
@@ -74,6 +78,15 @@ pub enum Command {
     Push(String, BatteryReading),
     /// Un dispositivo avisó (o dejó de informar) de que se ha apagado.
     Gone(String),
+    /// Leer los controles configurables de un dispositivo (ficha «Personalizar»).
+    Controls(String, ControlsReply),
+    /// Escribir un control y devolver la lista releída del dispositivo.
+    SetControl {
+        device: String,
+        control: String,
+        value: Value,
+        reply: ControlsReply,
+    },
 }
 
 /// Estado compartido con los comandos Tauri.
@@ -142,6 +155,8 @@ struct Tracked {
     offline_streak: u32,
     /// Se sabe con certeza que está apagado/desconectado (evento o provider fiable).
     gone: bool,
+    /// El provider sabe ajustar algo de este dispositivo (botón «Personalizar»).
+    configurable: bool,
 }
 
 impl Tracked {
@@ -197,6 +212,9 @@ struct Poller {
     listeners: HashMap<String, Listener>,
     demo_was: bool,
     keep_eq_was: bool,
+    /// Confianza y volatilidad de los controles vistos en la última lectura de
+    /// cada dispositivo: (dispositivo, control) → (confianza, volátil).
+    control_meta: HashMap<(String, String), (Trust, bool)>,
 }
 
 impl Poller {
@@ -214,6 +232,7 @@ impl Poller {
             listeners: HashMap::new(),
             demo_was: false,
             keep_eq_was: false,
+            control_meta: HashMap::new(),
         }
     }
 
@@ -266,6 +285,12 @@ impl Poller {
                 Ok(Command::HidInventory(reply)) => {
                     let _ = reply.send(self.hid_inventory());
                 }
+                Ok(Command::Controls(device, reply)) => {
+                    let _ = reply.send(self.device_controls(&device));
+                }
+                Ok(Command::SetControl { device, control, value, reply }) => {
+                    let _ = reply.send(self.set_control(&device, &control, value));
+                }
                 Err(RecvTimeoutError::Timeout) => {}
                 Err(RecvTimeoutError::Disconnected) => return,
             }
@@ -306,7 +331,10 @@ impl Poller {
         };
         let tx = self.shared.sender();
         let mut seen = HashSet::new();
+        let settings = self.shared.settings();
         let mut cycle = Cycle {
+            saved: settings.reapply_controls.then_some(&settings.device_controls),
+            experimental: settings.experimental_controls,
             ctx: &ctx,
             devices: &mut self.devices,
             listeners: &mut self.listeners,
@@ -398,6 +426,7 @@ impl Poller {
                     battery: t.battery.clone(),
                     last_read: t.last_read,
                     low,
+                    configurable: t.configurable,
                     name_source,
                 }
             })
@@ -427,6 +456,98 @@ impl Poller {
         };
         let _ = self.app.emit(EVENT_STATE, &payload);
         tray::update(&self.app, &payload.devices);
+    }
+
+    /// Ejecuta `f` con el provider de un dispositivo, fuera del ciclo de sondeo:
+    /// con la enumeración HID que ya hay y cerrando los handles al terminar.
+    fn with_provider<T>(
+        &mut self,
+        device_id: &str,
+        f: impl FnOnce(&mut dyn DeviceProvider, &PollContext, &DeviceInfo) -> Result<T, ProviderError>,
+    ) -> Result<T, String> {
+        use crate::i18n::tr;
+        let t = self
+            .devices
+            .get(device_id)
+            .ok_or_else(|| tr("El dispositivo ya no está conectado", "The device is no longer connected").to_string())?;
+        let info = t.info.clone();
+        let p: &mut dyn DeviceProvider = if info.provider == "mock" {
+            &mut self.mock
+        } else {
+            match self.providers.iter_mut().find(|p| p.id() == info.provider) {
+                Some(p) => p.as_mut(),
+                None => return Err("provider".into()),
+            }
+        };
+        let ctx = PollContext {
+            hid: self.hid.as_ref(),
+            razer_keep_eq: false,
+            forced: true,
+        };
+        let result = catch_unwind(AssertUnwindSafe(|| f(&mut *p, &ctx, &info)));
+        let _ = catch_unwind(AssertUnwindSafe(|| p.release()));
+        match result {
+            Ok(r) => r.map_err(|e| e.to_string()),
+            Err(_) => {
+                log::error!("{}: pánico en los ajustes de {}", info.provider, info.name);
+                Err(tr("Error interno del provider", "Internal provider error").into())
+            }
+        }
+    }
+
+    fn device_controls(&mut self, device_id: &str) -> Result<DeviceControls, String> {
+        let controls = self.with_provider(device_id, |p, ctx, info| p.controls(ctx, info))?;
+        self.control_meta.retain(|(d, _), _| d != device_id);
+        for c in &controls.controls {
+            self.control_meta
+                .insert((device_id.to_string(), c.id.to_string()), (c.trust, c.volatile));
+        }
+        Ok(controls)
+    }
+
+    /// Escribe un control, relee el dispositivo y guarda el valor si es de los que
+    /// se pierden al apagarlo.
+    fn set_control(&mut self, device_id: &str, control: &str, value: Value) -> Result<DeviceControls, String> {
+        use crate::i18n::tr;
+        let key = (device_id.to_string(), control.to_string());
+        if !self.control_meta.contains_key(&key) {
+            self.device_controls(device_id)?;
+        }
+        let (trust, _) = *self
+            .control_meta
+            .get(&key)
+            .ok_or_else(|| tr("Este dispositivo no tiene ese ajuste", "This device has no such setting").to_string())?;
+        let mut settings = self.shared.settings();
+        if trust == Trust::Experimental && !settings.experimental_controls {
+            return Err(tr(
+                "Control experimental: actívalos en Ajustes para poder usarlo",
+                "Experimental control: enable them in Settings to use it",
+            )
+            .into());
+        }
+        log::info!("{device_id}: {control} ← {value:?}");
+        self.with_provider(device_id, |p, ctx, info| p.set_control(ctx, info, control, &value))?;
+        let controls = self.device_controls(device_id)?;
+
+        // Lo que se guarda es lo que el dispositivo dice tener ahora; si no se
+        // puede leer, lo que se le pidió.
+        let read_back = controls.controls.iter().find(|c| c.id == control);
+        if read_back.is_some_and(|c| c.volatile) {
+            let stored = read_back.and_then(|c| c.value.clone()).unwrap_or(value);
+            if let Some(fingerprint) = self.devices.get(device_id).map(|t| t.info.fingerprint.clone()) {
+                settings
+                    .device_controls
+                    .entry(fingerprint)
+                    .or_default()
+                    .insert(control.to_string(), stored);
+                if let Err(e) = settings.save(&self.app) {
+                    log::warn!("no se pudieron guardar los ajustes del dispositivo: {e}");
+                }
+                self.shared.set_settings(settings);
+                self.publish(false);
+            }
+        }
+        Ok(controls)
     }
 
     fn hid_inventory(&mut self) -> Vec<HidRow> {
@@ -473,6 +594,9 @@ struct Cycle<'a, 'b> {
     seen: &'a mut HashSet<String>,
     tx: Option<&'a Sender<Command>>,
     now: u64,
+    /// Ajustes volátiles guardados, si está activo «reaplicar al conectar».
+    saved: Option<&'a SavedControls>,
+    experimental: bool,
 }
 
 impl Cycle<'_, '_> {
@@ -507,7 +631,10 @@ impl Cycle<'_, '_> {
                 alerted: false,
                 offline_streak: 0,
                 gone: false,
+                configurable: false,
             });
+            let was_online = t.status == DeviceStatus::Online;
+            t.configurable = p.capabilities(&info).configurable();
             t.info = info;
             t.last_seen = now;
             match result {
@@ -551,6 +678,17 @@ impl Cycle<'_, '_> {
                 }
             }
 
+            // Acaba de encenderse o de volver: devolverle los ajustes que olvida al
+            // apagarse (salvo que la app del fabricante esté abierta y mande ella).
+            if !was_online && t.status == DeviceStatus::Online && t.configurable {
+                if let Some(saved) = self.saved.and_then(|s| s.get(&t.info.fingerprint)) {
+                    match p.vendor_app() {
+                        Some(app) => log::info!("{}: {app} abierto, no se reaplican ajustes", t.info.name),
+                        None => reapply(p, ctx, &t.info, saved, self.experimental),
+                    }
+                }
+            }
+
             // Arrancar la escucha si el provider la ofrece y aún no está activa.
             let id = t.info.id.clone();
             if !self.listeners.contains_key(&id) {
@@ -566,6 +704,40 @@ impl Cycle<'_, '_> {
             }
         }
         let _ = catch_unwind(AssertUnwindSafe(|| p.release()));
+    }
+}
+
+/// Vuelve a aplicar los valores guardados que ya no coinciden con lo que dice el
+/// dispositivo, en el orden en que el provider lista sus controles (así el modo
+/// va antes que el DPI que depende de él).
+fn reapply(
+    p: &mut dyn DeviceProvider,
+    ctx: &PollContext,
+    info: &DeviceInfo,
+    saved: &BTreeMap<String, Value>,
+    experimental: bool,
+) {
+    let current = match catch_unwind(AssertUnwindSafe(|| p.controls(ctx, info))) {
+        Ok(Ok(c)) => c,
+        Ok(Err(e)) => {
+            log::info!("{}: no se pudieron leer los ajustes para reaplicarlos: {e}", info.name);
+            return;
+        }
+        Err(_) => {
+            log::error!("{}: pánico leyendo ajustes", info.name);
+            return;
+        }
+    };
+    for c in current.controls.iter().filter(|c| c.volatile) {
+        let Some(want) = saved.get(c.id) else { continue };
+        if c.value.as_ref() == Some(want) || (c.trust == Trust::Experimental && !experimental) {
+            continue;
+        }
+        match catch_unwind(AssertUnwindSafe(|| p.set_control(ctx, info, c.id, want))) {
+            Ok(Ok(())) => log::info!("{}: reaplicado {} = {want:?}", info.name, c.id),
+            Ok(Err(e)) => log::info!("{}: no se pudo reaplicar {}: {e}", info.name, c.id),
+            Err(_) => log::error!("{}: pánico reaplicando {}", info.name, c.id),
+        }
     }
 }
 
@@ -632,4 +804,96 @@ fn start_listener(
             alive_t.store(false, Ordering::Relaxed);
         });
     spawned.ok().map(|_| Listener { alive, latest })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::controls::{Control, Kind, Section};
+    use crate::model::{Connection, DeviceKind};
+
+    /// Provider de pega: tres controles en memoria y un registro de escrituras.
+    struct Fake {
+        values: BTreeMap<&'static str, i64>,
+        writes: Vec<(String, Value)>,
+    }
+
+    impl DeviceProvider for Fake {
+        fn id(&self) -> &'static str {
+            "fake"
+        }
+        fn discover(&mut self, _: &PollContext) -> Result<Vec<DeviceInfo>, ProviderError> {
+            Ok(Vec::new())
+        }
+        fn battery(&mut self, _: &PollContext, _: &DeviceInfo) -> Result<BatteryReading, ProviderError> {
+            Err(ProviderError::NoResponse)
+        }
+        fn controls(&mut self, _: &PollContext, _: &DeviceInfo) -> Result<DeviceControls, ProviderError> {
+            let ctl = |id: &'static str, v: i64| Control::new(id, Section::Pointer, id, Kind::Toggle, Some(Value::Int(v)));
+            Ok(DeviceControls {
+                // El orden del provider manda: el modo antes que el DPI.
+                controls: vec![
+                    ctl("mode", self.values["mode"]).volatile(),
+                    ctl("dpi", self.values["dpi"]).volatile(),
+                    ctl("guess", self.values["guess"]).volatile().trust(Trust::Experimental),
+                    ctl("stored", self.values["stored"]),
+                ],
+                ..Default::default()
+            })
+        }
+        fn set_control(&mut self, _: &PollContext, _: &DeviceInfo, id: &str, v: &Value) -> Result<(), ProviderError> {
+            self.writes.push((id.to_string(), v.clone()));
+            Ok(())
+        }
+    }
+
+    fn info() -> DeviceInfo {
+        DeviceInfo {
+            id: "fake:1".into(),
+            fingerprint: "fake:1".into(),
+            provider: "fake",
+            vendor: "Fake".into(),
+            name: "FAKE".into(),
+            name_from_device: true,
+            model: "0000:0000".into(),
+            kind: DeviceKind::Mouse,
+            connection: Connection::Virtual,
+            via: None,
+            slot: None,
+        }
+    }
+
+    #[test]
+    fn reapply_writes_only_what_differs_in_provider_order() {
+        let ctx = PollContext { hid: None, razer_keep_eq: false, forced: false };
+        let saved: BTreeMap<String, Value> = [
+            ("dpi", 1600),   // distinto → se escribe
+            ("mode", 2),     // distinto → se escribe, y antes que el DPI
+            ("guess", 9),    // experimental → solo con el ajuste activado
+            ("stored", 5),   // no volátil → nunca
+        ]
+        .into_iter()
+        .map(|(k, v)| (k.to_string(), Value::Int(v)))
+        .collect();
+        let fresh = || Fake {
+            values: [("mode", 1), ("dpi", 800), ("guess", 0), ("stored", 0)].into_iter().collect(),
+            writes: Vec::new(),
+        };
+
+        let mut p = fresh();
+        reapply(&mut p, &ctx, &info(), &saved, false);
+        assert_eq!(p.writes, vec![("mode".to_string(), Value::Int(2)), ("dpi".to_string(), Value::Int(1600))]);
+
+        let mut p = fresh();
+        reapply(&mut p, &ctx, &info(), &saved, true);
+        assert_eq!(p.writes.len(), 3);
+        assert_eq!(p.writes[2], ("guess".to_string(), Value::Int(9)));
+
+        // Si el dispositivo ya tiene lo guardado, no se le escribe nada.
+        let mut p = fresh();
+        p.values.insert("mode", 2);
+        p.values.insert("dpi", 1600);
+        reapply(&mut p, &ctx, &info(), &saved, false);
+        assert!(p.writes.is_empty());
+    }
 }

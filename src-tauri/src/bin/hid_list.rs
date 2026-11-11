@@ -4,6 +4,7 @@
 //!   cargo run --bin hid-list -- 046d    # filtrar por VID (hex)
 //!   cargo run --bin hid-list -- --paths # incluir rutas completas
 //!   cargo run --bin hid-list -- --probe # ejecutar los providers reales una vez
+//!   cargo run --bin hid-list -- --probe --controls # + ajustes configurables (solo lectura)
 //!
 //! Sin `--probe` no abre ningún dispositivo: solo enumera, así que es seguro con
 //! G HUB/Synapse abiertos. `--probe` sí habla con el hardware (solo lecturas).
@@ -15,7 +16,7 @@ use volt_lib::hid::HidContext;
 use volt_lib::provider::PollContext;
 use volt_lib::providers;
 
-fn probe(keep_eq: bool) {
+fn probe(keep_eq: bool, controls: bool) {
     let hid = HidContext::new()
         .map_err(|e| eprintln!("hidapi: {e}"))
         .ok();
@@ -51,6 +52,29 @@ fn probe(keep_eq: bool) {
                             t1.elapsed()
                         ),
                         Err(e) => println!("      {e}  ({:?})", t1.elapsed()),
+                    }
+                    // `--controls`: lo que se podría personalizar y su valor actual.
+                    // Solo lee; sirve para comprobar un protocolo antes de escribir nada.
+                    if controls && p.capabilities(&d).configurable() {
+                        let t2 = Instant::now();
+                        match p.controls(&ctx, &d) {
+                            Ok(c) => {
+                                for ctl in &c.controls {
+                                    println!(
+                                        "      · {:<22} = {:<28} {:?}{}",
+                                        ctl.id,
+                                        ctl.value.as_ref().map(|v| format!("{v:?}")).unwrap_or_else(|| "?".into()),
+                                        ctl.trust,
+                                        if ctl.volatile { " (volátil)" } else { "" }
+                                    );
+                                }
+                                for n in &c.notes {
+                                    println!("      ! {n}");
+                                }
+                                println!("      ajustes leídos en {:?}", t2.elapsed());
+                            }
+                            Err(e) => println!("      ajustes: {e}  ({:?})", t2.elapsed()),
+                        }
                     }
                 }
             }
@@ -259,7 +283,7 @@ fn main() {
         // RUST_LOG=volt_lib=trace muestra los informes HID++ en crudo.
         env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("volt_lib=info"))
             .init();
-        probe(args.iter().any(|a| a == "--keep-eq"));
+        probe(args.iter().any(|a| a == "--keep-eq"), args.iter().any(|a| a == "--controls"));
         return;
     }
     let show_paths = args.iter().any(|a| a == "--paths");

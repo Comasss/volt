@@ -9,7 +9,6 @@ use std::sync::atomic::{AtomicBool, Ordering};
 #[cfg(windows)]
 use std::time::Duration;
 
-#[cfg(windows)]
 const EXE: &str = "RazerAppEngine.exe";
 /// Tras cerrarse Synapse, el auricular tarda un poco en volver a su estado propio.
 #[cfg(windows)]
@@ -18,17 +17,19 @@ const SETTLE: Duration = Duration::from_secs(3);
 #[cfg(windows)]
 static WATCHING: AtomicBool = AtomicBool::new(false);
 
-/// PID del proceso principal de Synapse (Electron lanza varios), si está abierto.
+/// (PID, PID del padre) de todos los procesos con ese nombre de ejecutable.
 #[cfg(windows)]
-pub fn find() -> Option<u32> {
+fn processes(exe: &str) -> Vec<(u32, u32)> {
     use windows::Win32::Foundation::CloseHandle;
     use windows::Win32::System::Diagnostics::ToolHelp::{
         CreateToolhelp32Snapshot, Process32FirstW, Process32NextW, PROCESSENTRY32W,
         TH32CS_SNAPPROCESS,
     };
-    let mut engines: Vec<(u32, u32)> = Vec::new();
+    let mut found: Vec<(u32, u32)> = Vec::new();
     unsafe {
-        let snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0).ok()?;
+        let Ok(snap) = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0) else {
+            return found;
+        };
         let mut e = PROCESSENTRY32W {
             dwSize: std::mem::size_of::<PROCESSENTRY32W>() as u32,
             ..Default::default()
@@ -36,8 +37,8 @@ pub fn find() -> Option<u32> {
         if Process32FirstW(snap, &mut e).is_ok() {
             loop {
                 let len = e.szExeFile.iter().position(|&c| c == 0).unwrap_or(e.szExeFile.len());
-                if String::from_utf16_lossy(&e.szExeFile[..len]).eq_ignore_ascii_case(EXE) {
-                    engines.push((e.th32ProcessID, e.th32ParentProcessID));
+                if String::from_utf16_lossy(&e.szExeFile[..len]).eq_ignore_ascii_case(exe) {
+                    found.push((e.th32ProcessID, e.th32ParentProcessID));
                 }
                 if Process32NextW(snap, &mut e).is_err() {
                     break;
@@ -46,17 +47,28 @@ pub fn find() -> Option<u32> {
         }
         let _ = CloseHandle(snap);
     }
+    found
+}
+
+#[cfg(not(windows))]
+fn processes(_exe: &str) -> Vec<(u32, u32)> {
+    Vec::new()
+}
+
+/// ¿Hay algún proceso con ese nombre de ejecutable? (p. ej. `lghub_agent.exe`).
+pub fn process_running(exe: &str) -> bool {
+    !processes(exe).is_empty()
+}
+
+/// PID del proceso principal de Synapse (Electron lanza varios), si está abierto.
+pub fn find() -> Option<u32> {
+    let engines = processes(EXE);
     // El principal es el que no cuelga de otro RazerAppEngine.
     engines
         .iter()
         .find(|(_, parent)| !engines.iter().any(|(pid, _)| pid == parent))
         .or(engines.first())
         .map(|(pid, _)| *pid)
-}
-
-#[cfg(not(windows))]
-pub fn find() -> Option<u32> {
-    None
 }
 
 pub fn is_running() -> bool {

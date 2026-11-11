@@ -8,9 +8,20 @@ import "./styles.css";
 import { createBackend, isTauri, type Backend } from "./backend";
 import { setLang, t, type Key } from "./i18n";
 import { icon, type IconName } from "./icons";
-import type { AppState, Connection, Device, DeviceKind, HidRow, Settings } from "./types";
+import type {
+  AppState,
+  Connection,
+  Control,
+  ControlSection,
+  ControlValue,
+  Device,
+  DeviceControls,
+  DeviceKind,
+  HidRow,
+  Settings,
+} from "./types";
 
-type View = "devices" | "diag" | "settings";
+type View = "devices" | "device" | "diag" | "settings";
 
 const ui = {
   view: "devices" as View,
@@ -22,6 +33,13 @@ const ui = {
   editing: null as string | null,
   /** Estado llegado mientras se edita: se aplica al terminar para no perder el foco. */
   pending: null as AppState | null,
+  /** Dispositivo abierto en la vista «Personalizar». */
+  detail: null as string | null,
+  controls: null as DeviceControls | null,
+  ctlLoading: false,
+  ctlError: null as string | null,
+  /** Control que se está escribiendo ahora (bloquea el resto). */
+  ctlBusy: null as string | null,
 };
 
 let state: AppState;
@@ -250,7 +268,11 @@ function sheet(d: Device, index: number): string {
       <div><dt>${icon("battery")}${t("specPower")}</dt><dd>${power}${d.battery?.voltageMv ? ` · ${(d.battery.voltageMv / 1000).toFixed(2)} V` : ""}</dd></div>
       <div><dt>${icon("clock")}${t("specRead")}</dt><dd>${d.lastRead ? clock(d.lastRead) : "—"}</dd></div>
     </dl>
-    <footer class="sheet-foot">${statusLine}<span class="sheet-prov">${esc(d.provider.toUpperCase())}</span></footer>
+    <footer class="sheet-foot">${statusLine}${
+      d.configurable
+        ? `<button class="btn btn-small" data-customize="${esc(d.id)}" title="${t("customizeTitle")}">${icon("sliders")}${t("customize")}</button>`
+        : ""
+    }<span class="sheet-prov">${esc(d.provider.toUpperCase())}</span></footer>
   </article>`;
 }
 
@@ -272,6 +294,243 @@ function viewDevices(): string {
     </div>`;
   }
   return `${head}<div class="sheets">${state.devices.map(sheet).join("")}</div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Personalizar un dispositivo (DPI, luces, reposo, audio…)
+// ---------------------------------------------------------------------------
+
+const SECTION_ORDER: ControlSection[] = ["pointer", "lighting", "audio", "power"];
+const SWATCHES = ["#ffffff", "#ff0000", "#ff4f00", "#ffd000", "#00ff40", "#00e5ff", "#0050ff", "#b000ff", "#ff00a0"];
+
+const detailDevice = (): Device | undefined => state.devices.find((d) => d.id === ui.detail);
+
+/** ¿Se puede tocar este control ahora? */
+function ctlLocked(c: Control): boolean {
+  return (
+    ui.ctlBusy != null ||
+    detailDevice()?.status.state !== "online" ||
+    (c.trust === "experimental" && !state.settings.experimentalControls)
+  );
+}
+
+function ctlButtons(c: Control, options: { value: ControlValue; label: string }[], current: ControlValue | null): string {
+  const dis = ctlLocked(c) ? "disabled" : "";
+  return `<div class="segmented ctl-seg">${options
+    .map(
+      (o) =>
+        `<button ${dis} class="${JSON.stringify(o.value) === JSON.stringify(current) ? "is-on" : ""}" data-ctl="${esc(c.id)}" data-value="${esc(JSON.stringify(o.value))}">${esc(o.label)}</button>`,
+    )
+    .join("")}</div>`;
+}
+
+function ctlWidget(c: Control): string {
+  const dis = ctlLocked(c) ? "disabled" : "";
+  const id = esc(c.id);
+  switch (c.type) {
+    case "toggle":
+      return ctlButtons(c, [{ value: true, label: "ON" }, { value: false, label: "OFF" }], c.value);
+    case "choice":
+      if (c.options.length <= 5) return ctlButtons(c, c.options, c.value);
+      return `<select class="ctl-select" ${dis} data-ctl="${id}">
+        ${c.value == null ? `<option selected disabled>${t("ctlNotRead")}</option>` : ""}
+        ${c.options.map((o) => `<option value="${o.value}" ${o.value === c.value ? "selected" : ""}>${esc(o.label)}</option>`).join("")}
+      </select>`;
+    case "range": {
+      // Pocos niveles (brillo, velocidad): botones en vez de deslizador.
+      if ((c.max - c.min) / c.step <= 8) {
+        const levels = [];
+        for (let v = c.min; v <= c.max; v += c.step) levels.push({ value: v, label: String(v) });
+        return ctlButtons(c, levels, c.value);
+      }
+      const v = typeof c.value === "number" ? c.value : c.min;
+      return `<div class="ctl-range">
+        <div class="ctl-range-main">
+          <input type="range" ${dis} data-ctl="${id}" min="${c.min}" max="${c.max}" step="${c.step}" value="${v}" aria-label="${esc(c.label)}" />
+          <label class="ctl-number"><input type="number" ${dis} data-ctl="${id}" min="${c.min}" max="${c.max}" step="${c.step}" value="${c.value == null ? "" : v}" aria-label="${esc(c.label)}" /><span>${esc(c.unit)}</span></label>
+        </div>
+        ${c.presets.length ? ctlButtons(c, c.presets.map((p) => ({ value: p, label: String(p) })), c.value) : ""}
+      </div>`;
+    }
+    case "color": {
+      const v = typeof c.value === "string" ? c.value : "#ffffff";
+      return `<div class="ctl-color">
+        <label class="ctl-color-pick"><input type="color" ${dis} data-ctl="${id}" value="${esc(v)}" aria-label="${esc(c.label)}" /><span>${esc(v.toUpperCase())}</span></label>
+        <div class="ctl-swatches">${SWATCHES.map(
+          (s) => `<button ${dis} class="${s === v ? "is-on" : ""}" style="--sw:${s}" data-ctl="${id}" data-value="${esc(JSON.stringify(s))}" title="${s.toUpperCase()}" aria-label="${s}"></button>`,
+        ).join("")}</div>
+      </div>`;
+    }
+    case "bands": {
+      const vals = Array.isArray(c.value) ? c.value : c.labels.map(() => 0);
+      const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
+      return `<div class="ctl-bands-wrap">
+        <div class="ctl-bands" data-bands="${id}">${c.labels
+          .map(
+            (l, i) => `<label class="ctl-band"><output>${c.value == null ? "?" : sign(vals[i] ?? 0)}</output>
+            <input type="range" ${dis} data-band="${i}" min="${c.min}" max="${c.max}" step="1" value="${vals[i] ?? 0}" aria-label="${esc(l)} Hz" />
+            <span>${esc(l)}</span></label>`,
+          )
+          .join("")}</div>
+        ${ctlButtons(c, c.presets.map((p) => ({ value: p.values, label: p.label })), c.value)}
+      </div>`;
+    }
+  }
+}
+
+function ctlRow(c: Control): string {
+  const flags = [
+    `<span class="flag ${c.trust === "experimental" ? "flag-warn" : "flag-dim"}" title="${t(`trustTitle_${c.trust}` as Key)}">${t(`trust_${c.trust}` as Key)}</span>`,
+    c.volatile && state.settings.reapplyControls ? `<span class="flag flag-dim" title="${t("volatileTitle")}">${t("volatileFlag")}</span>` : "",
+    c.value == null ? `<span class="flag flag-dim">${t("ctlNotRead")}</span>` : "",
+  ].join("");
+  return `<div class="set-row ctl-row ${c.type === "bands" ? "ctl-row-wide" : ""} ${ui.ctlBusy === c.id ? "is-busy" : ""}">
+    <div class="set-label">${esc(c.label)}<span class="ctl-flags">${flags}</span>${c.hint ? `<small>${esc(c.hint)}</small>` : ""}</div>
+    <div class="set-ctl">${ctlWidget(c)}</div>
+  </div>`;
+}
+
+function viewDevice(): string {
+  const d = detailDevice();
+  if (!d) return viewDevices();
+  const p = percentOf(d);
+  const meta = [
+    t(`kind_${d.kind}` as Key),
+    d.vendor.toUpperCase(),
+    d.model,
+    p != null ? `${p} %` : null,
+    d.status.state === "online" ? t("online") : d.status.state === "offline" ? t("offline") : t("unavailable"),
+  ]
+    .filter(Boolean)
+    .map((x) => `<span>${esc(x!)}</span>`)
+    .join("");
+  const head = `<div class="view-head">
+      <h1>${esc(d.name)}</h1>
+      <div class="view-meta">
+        <button class="btn" data-view="devices">${icon("back")}${t("backToDevices")}</button>
+        <button class="btn ${ui.ctlLoading ? "is-busy" : ""}" data-action="reload-controls">${icon("scan")}${t("reread")}</button>
+      </div>
+    </div>
+    <div class="detail-meta">${icon(KIND_ICON[d.kind])}${meta}</div>`;
+  const note = (text: string) => `<div class="sheet-note">${icon("warn")}<span>${esc(text)}</span></div>`;
+
+  let body = "";
+  if (ui.ctlError) body += note(ui.ctlError);
+  if (d.status.state !== "online") body += note(t("ctlOffline"));
+  if (!ui.controls) {
+    if (ui.ctlLoading) body += `<div class="empty"><div class="empty-title">${t("ctlLoading")}</div></div>`;
+    return head + body;
+  }
+  const cs = ui.controls;
+  body += cs.notes.map(note).join("");
+  if (cs.controls.some((c) => c.trust === "experimental") && !state.settings.experimentalControls) {
+    body += `<div class="sheet-note">${icon("warn")}<span>${t("expLocked")} <button class="link" data-view="settings">${t("expEnable")}</button></span></div>`;
+  }
+  if (!cs.controls.length) body += `<div class="empty"><div class="empty-title">${t("ctlNone")}</div></div>`;
+  let n = 0;
+  for (const section of SECTION_ORDER) {
+    const list = cs.controls.filter((c) => c.section === section);
+    if (!list.length) continue;
+    body += `<section class="set-block">
+      <h3 class="set-title"><span>${pad(++n)}</span>${t(`sec_${section}` as Key)}</h3>
+      ${list.map(ctlRow).join("")}
+    </section>`;
+  }
+  body += `<p class="hint ctl-source"><b>${t("ctlSource")}</b> ${esc(cs.source)}</p>`;
+  return head + body;
+}
+
+async function loadControls() {
+  const id = ui.detail;
+  if (!id) return;
+  ui.ctlLoading = true;
+  ui.ctlError = null;
+  render();
+  try {
+    const c = await backend.deviceControls(id);
+    if (ui.detail !== id) return;
+    ui.controls = c;
+  } catch (e) {
+    if (ui.detail !== id) return;
+    ui.ctlError = String(e);
+  }
+  ui.ctlLoading = false;
+  render();
+}
+
+function openDevice(id: string) {
+  ui.view = "device";
+  ui.selected = id;
+  ui.detail = id;
+  ui.controls = null;
+  ui.ctlError = null;
+  ui.ctlBusy = null;
+  $("content").scrollTop = 0;
+  void loadControls();
+}
+
+async function setControl(control: string, value: ControlValue) {
+  const id = ui.detail;
+  const c = ui.controls?.controls.find((x) => x.id === control);
+  if (!id || !c || ctlLocked(c)) return;
+  ui.ctlBusy = control;
+  ui.ctlError = null;
+  c.value = value; // respuesta inmediata; lo que cuenta es lo que conteste el dispositivo
+  render();
+  try {
+    const next = await backend.setDeviceControl(id, control, value);
+    if (ui.detail === id) ui.controls = next;
+  } catch (e) {
+    if (ui.detail === id) {
+      ui.ctlError = String(e);
+      // Lo que se enseñaba ya no es fiable: volver a leer el dispositivo.
+      ui.ctlBusy = null;
+      void backend.deviceControls(id).then(
+        (fresh) => {
+          if (ui.detail === id) {
+            ui.controls = fresh;
+            render();
+          }
+        },
+        () => {},
+      );
+    }
+  }
+  if (ui.detail === id) {
+    ui.ctlBusy = null;
+    render();
+  }
+}
+
+/** Cambios en deslizadores, campos numéricos, listas y selector de color. */
+function bindControls() {
+  const content = $("content");
+  content.addEventListener("change", (ev) => {
+    const el = ev.target as HTMLInputElement | HTMLSelectElement;
+    const bands = el.closest<HTMLElement>("[data-bands]");
+    if (bands) {
+      const values = [...bands.querySelectorAll<HTMLInputElement>("input[data-band]")].map((i) => Number(i.value));
+      void setControl(bands.dataset.bands!, values);
+      return;
+    }
+    const control = el.dataset.ctl;
+    if (!control) return;
+    if (el instanceof HTMLInputElement && el.type === "color") void setControl(control, el.value.toLowerCase());
+    else if (el.value !== "" && Number.isFinite(Number(el.value))) void setControl(control, Number(el.value));
+  });
+  // Mientras se arrastra: actualizar la cifra de al lado sin escribir en el dispositivo.
+  content.addEventListener("input", (ev) => {
+    const el = ev.target as HTMLInputElement;
+    if (el.type !== "range") return;
+    if (el.dataset.band != null) {
+      const out = el.parentElement?.querySelector("output");
+      const n = Number(el.value);
+      if (out) out.textContent = n > 0 ? `+${n}` : String(n);
+    } else {
+      const num = el.closest(".ctl-range")?.querySelector<HTMLInputElement>('input[type="number"]');
+      if (num) num.value = el.value;
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -320,7 +579,12 @@ function viewSettings(): string {
     ${row(t("demoDevices"), t("demoHint"), toggle("demoDevices"))}
   </section>
   <section class="set-block">
-    <h3 class="set-title"><span>04</span>${t("secAudio")}</h3>
+    <h3 class="set-title"><span>04</span>${t("secDevices")}</h3>
+    ${row(t("reapply"), t("reapplyHint"), toggle("reapplyControls"))}
+    ${row(t("experimental"), t("experimentalHint"), toggle("experimentalControls"))}
+  </section>
+  <section class="set-block">
+    <h3 class="set-title"><span>05</span>${t("secAudio")}</h3>
     ${row(t("keepEq"), t("keepEqHint"), toggle("blacksharkKeepEq"))}
   </section>`;
 }
@@ -386,6 +650,7 @@ function openDeviceMenu(d: Device, x: number, y: number) {
     `<button role="menuitem" data-ctx="${action}">${icon(ic)}<span>${label}</span></button>`;
   menu.innerHTML = `
     <div class="ctx-title">${esc(d.name)}</div>
+    ${d.configurable ? item("customize", "sliders", t("customize")) : ""}
     ${item("rename", "edit", t("rename"))}
     ${item("refresh", "scan", t("readNow"))}
     ${item("copy", "root", t("copyFingerprint"))}
@@ -399,7 +664,8 @@ function openDeviceMenu(d: Device, x: number, y: number) {
     const action = (ev.target as HTMLElement).closest<HTMLElement>("[data-ctx]")?.dataset.ctx;
     if (!action) return;
     closeMenu();
-    if (action === "rename") {
+    if (action === "customize") openDevice(d.id);
+    else if (action === "rename") {
       ui.view = "devices";
       startRename(d.fingerprint);
     } else if (action === "refresh") void backend.refresh();
@@ -505,7 +771,8 @@ function viewDiag(): string {
 
 function renderContent() {
   const el = $("content");
-  el.innerHTML = ui.view === "settings" ? viewSettings() : ui.view === "diag" ? viewDiag() : viewDevices();
+  el.innerHTML =
+    ui.view === "settings" ? viewSettings() : ui.view === "diag" ? viewDiag() : ui.view === "device" ? viewDevice() : viewDevices();
   // Ojo: no `data-view` (el manejador de clics lo trataría como un enlace de vista
   // y cada clic dentro del contenido repintaría todo, incluido el campo de renombrar).
   el.dataset.page = ui.view;
@@ -532,6 +799,8 @@ function render() {
 
 function go(view: View) {
   ui.view = view;
+  ui.detail = null;
+  ui.controls = null;
   if (view !== "devices") ui.selected = null;
   render();
   $("content").scrollTop = 0;
@@ -539,7 +808,13 @@ function go(view: View) {
 }
 
 function selectDevice(id: string) {
+  // Con una ficha de ajustes abierta, el árbol cambia de dispositivo sin salir de ella.
+  if (ui.view === "device") {
+    const d = state.devices.find((x) => x.id === id);
+    if (d?.configurable) return openDevice(id);
+  }
   ui.view = "devices";
+  ui.detail = null;
   ui.selected = id;
   render();
   const card = document.querySelector<HTMLElement>(`.sheet[data-id="${CSS.escape(id)}"]`);
@@ -566,11 +841,13 @@ function bindChrome() {
 
   document.body.addEventListener("click", (ev) => {
     const el = (ev.target as HTMLElement).closest<HTMLElement>(
-      "[data-view],[data-device],[data-set],[data-step],[data-action],[data-rename-start],[data-rename-auto]",
+      "[data-view],[data-device],[data-set],[data-step],[data-action],[data-rename-start],[data-rename-auto],[data-customize],button[data-ctl]",
     );
     if (!el) return;
-    const { view, device, set, value, step, action, renameStart, renameAuto } = el.dataset;
-    if (renameStart) startRename(renameStart);
+    const { view, device, set, value, step, action, renameStart, renameAuto, customize, ctl } = el.dataset;
+    if (customize) openDevice(customize);
+    else if (ctl && value != null) void setControl(ctl, JSON.parse(value) as ControlValue);
+    else if (renameStart) startRename(renameStart);
     else if (renameAuto) void commitRename(renameAuto, null);
     else if (view) go(view as View);
     else if (device) selectDevice(device);
@@ -581,6 +858,7 @@ function bindChrome() {
       const next = Math.min(50, Math.max(5, state.settings.lowThreshold + Number(step)));
       void saveSettings({ lowThreshold: next });
     } else if (action === "rescan-hid") void loadHid();
+    else if (action === "reload-controls") void loadControls();
     else if (action === "test-notification") void backend.testNotification();
   });
 
@@ -614,9 +892,22 @@ function onState(s: AppState) {
     return;
   }
   const langChanged = s.lang !== state.lang;
+  const before = detailDevice()?.status.state;
   state = s;
   applyTheme();
   if (langChanged) applyLang();
+  if (ui.view === "device") {
+    const d = detailDevice();
+    if (!d) return go("devices"); // se ha desconectado
+    // No repintar la ficha mientras se usa un control (se perdería el arrastre):
+    // solo el árbol y la barra de estado, salvo que cambie el estado del dispositivo.
+    if (d.status.state === before && !langChanged) {
+      renderTree();
+      renderStatus();
+      return;
+    }
+    if (d.status.state === "online" && before !== "online") void loadControls();
+  }
   render();
 }
 
@@ -626,6 +917,7 @@ async function main() {
   applyTheme();
   bindChrome();
   bindContextMenu();
+  bindControls();
   blockBrowserShortcuts();
   applyLang();
   render();

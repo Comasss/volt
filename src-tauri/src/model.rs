@@ -115,6 +115,8 @@ pub struct DeviceSnapshot {
     pub last_read: Option<u64>,
     /// Por debajo del umbral y sin cargar.
     pub low: bool,
+    /// Hay ajustes que personalizar (DPI, luces, reposo, audio…).
+    pub configurable: bool,
     /// De dónde sale el nombre mostrado.
     pub name_source: NameSource,
 }
