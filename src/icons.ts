@@ -25,6 +25,7 @@ const paths = {
   min: '<path d="M3.5 8h9"/>',
   close: '<path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/>',
   warn: '<path d="M8 2l6.5 11.5h-13z"/><path d="M8 6.5v3.5M8 11.5v.5"/>',
+  back: '<path d="M13.5 8h-11M6.5 4l-4 4 4 4"/>',
   edit: '<path d="M10.5 2.5l3 3L6 13H3v-3z"/><path d="M9 4l3 3"/>',
 } as const;
 

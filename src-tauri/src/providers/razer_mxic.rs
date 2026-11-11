@@ -212,6 +212,104 @@ pub fn write_value(dev: &HidDevice, cmd: u8, value: u8) -> Result<Option<u8>, Mx
     back
 }
 
+// ---- Ajustes de audio (ficha «Personalizar») ----
+//
+// Las escrituras de audio son `tipo 04`, comando de lectura | 0x80 y datos
+// `00 <longitud> <valor…>`; el ecualizador de 10 bandas va con `tipo 0D`.
+// Verificado por rzr en este modelo: 0x9E (estado del EQ), 0x93, 0x9D (mejora de
+// audio) y 0x95 (bandas). El 0x93 rzr lo manda siempre a 255 creyéndolo un
+// volumen; la lectura 0x13 que Volt ya hacía en el diagnóstico muestra que es el
+// preset de EQ activo (07 juego, 08 música, 09 cine, FF personalizado). El tono
+// lateral (0x98/0x99) se deduce del mismo patrón y no está verificado.
+
+const TYPE_BULK: u8 = 0x0D;
+const CMD_PRESET_GET: u8 = 0x13;
+const CMD_BANDS_GET: u8 = 0x15;
+const CMD_SIDETONE_GET: u8 = 0x18;
+const CMD_SIDETONE_LEVEL_GET: u8 = 0x19;
+const CMD_ENHANCEMENT_GET: u8 = 0x1D;
+pub const CMD_PRESET: u8 = 0x93;
+pub const CMD_BANDS: u8 = 0x95;
+pub const CMD_SIDETONE: u8 = 0x98;
+pub const CMD_SIDETONE_LEVEL: u8 = 0x99;
+pub const CMD_ENHANCEMENT: u8 = 0x9D;
+
+pub const PRESET_GAME: u8 = 0x07;
+pub const PRESET_MUSIC: u8 = 0x08;
+pub const PRESET_MOVIE: u8 = 0x09;
+pub const PRESET_CUSTOM: u8 = 0xFF;
+pub const EQ_BANDS: usize = 10;
+
+/// Lo que el auricular dice de su audio. Cada campo es `None` si no contestó a
+/// esa pregunta (no todas las lecturas están confirmadas).
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct AudioState {
+    pub preset: Option<u8>,
+    pub bands: Option<[i8; EQ_BANDS]>,
+    pub enhancement: Option<bool>,
+    pub sidetone: Option<bool>,
+    pub sidetone_level: Option<u8>,
+}
+
+/// Trama de escritura de audio: `00 <len> <datos>` tras la cabecera.
+fn audio_frame(cmd: u8, data: &[u8]) -> [u8; LEN] {
+    let mut rest = [0u8; 2 + EQ_BANDS];
+    let n = data.len().min(EQ_BANDS);
+    rest[1] = n as u8;
+    rest[2..2 + n].copy_from_slice(&data[..n]);
+    let kind = if cmd == CMD_BANDS { TYPE_BULK } else { TYPE_AUDIO };
+    frame(8 + n as u8, 0x08, kind, cmd, &rest[..2 + n])
+}
+
+pub fn read_audio(dev: &HidDevice) -> Result<AudioState, MxicError> {
+    let mut buf = [0u8; LEN];
+    while matches!(dev.read_timeout(&mut buf, 0), Ok(n) if n > 0) {}
+    send(dev, &remote(true))?;
+    sleep(GAP);
+    // Si no contesta ni a la primera, está apagado: no se insiste con el resto.
+    let Some(preset) = query_u8(dev, CMD_PRESET_GET)? else {
+        let _ = send(dev, &remote(false));
+        return Err(MxicError::NoReply);
+    };
+    let bands = query_bytes(dev, CMD_BANDS_GET)?.and_then(|d| {
+        let b: [u8; EQ_BANDS] = d.get(..EQ_BANDS)?.try_into().ok()?;
+        Some(b.map(|x| x as i8))
+    });
+    let state = AudioState {
+        preset: Some(preset),
+        bands,
+        enhancement: query_u8(dev, CMD_ENHANCEMENT_GET)?.map(|v| v != 0),
+        sidetone: query_u8(dev, CMD_SIDETONE_GET)?.map(|v| v != 0),
+        sidetone_level: query_u8(dev, CMD_SIDETONE_LEVEL_GET)?,
+    };
+    let _ = send(dev, &remote(false));
+    sleep(GAP);
+    Ok(state)
+}
+
+/// Escribe uno o varios ajustes de audio en una sola sesión, como Synapse: cada
+/// orden precedida de `remote mode`, y al final se devuelve el control.
+pub fn write_audio(dev: &HidDevice, writes: &[(u8, &[u8])]) -> Result<(), MxicError> {
+    let mut buf = [0u8; LEN];
+    while matches!(dev.read_timeout(&mut buf, 0), Ok(n) if n > 0) {}
+    send(dev, &remote(true))?; // despertador: puede perderse
+    sleep(GAP);
+    let mut result = Ok(());
+    for (cmd, data) in writes {
+        result = send(dev, &remote(true)).and_then(|_| {
+            sleep(GAP);
+            send(dev, &audio_frame(*cmd, data))
+        });
+        sleep(GAP);
+        if result.is_err() {
+            break;
+        }
+    }
+    let _ = send(dev, &remote(false));
+    sleep(GAP);
+    result
+}
+
 /// Diagnóstico de solo lectura: preset de EQ activo, familia, curva y registro 0x1E.
 pub fn read_audio_state(dev: &HidDevice) -> Result<String, MxicError> {
     let mut buf = [0u8; LEN];
@@ -298,6 +396,23 @@ mod tests {
         assert_eq!(&q[..13], &[0x02, 0x80, 0x08, 0, 0, 0x50, 0x41, 0x08, 0, 0x03, 0x21, 0, 0]);
         let r = remote(true);
         assert_eq!(&r[..12], &[0x02, 0x80, 0x07, 0, 0, 0x50, 0x41, 0x0E, 0, 0x02, 0xE1, 0x01]);
+    }
+
+    #[test]
+    fn audio_frames_match_rzr() {
+        // Mismos bytes que construye rzr (protocol.rs) para cada orden.
+        let v = audio_frame(CMD_PRESET, &[0xFF]);
+        assert_eq!(&v[..14], &[0x02, 0x80, 0x09, 0, 0, 0x50, 0x41, 0x08, 0, 0x04, 0x93, 0x00, 0x01, 0xFF]);
+        let e = audio_frame(CMD_ENHANCEMENT, &[1]);
+        assert_eq!(&e[..14], &[0x02, 0x80, 0x09, 0, 0, 0x50, 0x41, 0x08, 0, 0x04, 0x9D, 0x00, 0x01, 0x01]);
+        let bands: [i8; 10] = [-3, -3, -4, 0, 5, 5, 4, 1, 0, -1];
+        let b = audio_frame(CMD_BANDS, &bands.map(|x| x as u8));
+        assert_eq!(&b[..13], &[0x02, 0x80, 0x12, 0, 0, 0x50, 0x41, 0x08, 0, 0x0D, 0x95, 0x00, 0x0A]);
+        assert_eq!(&b[13..23], &[0xFD, 0xFD, 0xFC, 0, 5, 5, 4, 1, 0, 0xFF]);
+        assert!(b[23..].iter().all(|&x| x == 0));
+        // Y la del registro de EQ que Volt ya escribía.
+        let q = audio_frame(CMD_PRESET_EQ_STATUS, &[0]);
+        assert_eq!(q, frame(0x09, 0x08, TYPE_AUDIO, CMD_PRESET_EQ_STATUS, &[0x00, 0x01, 0]));
     }
 
     #[test]

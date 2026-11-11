@@ -1,5 +1,6 @@
 //! Ajustes persistentes en `%APPDATA%\dev.volt.battery\settings.json`.
 
+use crate::controls::SavedControls;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
@@ -32,6 +33,15 @@ pub struct Settings {
     pub language: String,
     /// Enseñar también los dispositivos apagados/desconectados (con su último valor).
     pub show_offline: bool,
+    /// Volver a aplicar, al reconectar un dispositivo, los ajustes que este olvida
+    /// al apagarse (DPI en modo software, ecualizador…).
+    pub reapply_controls: bool,
+    /// Permitir escribir los controles marcados como experimentales (protocolo
+    /// deducido, sin verificar en hardware).
+    pub experimental_controls: bool,
+    /// Últimos valores puestos desde Volt a los controles volátiles:
+    /// huella del dispositivo → (control → valor). Lo mantiene el gestor.
+    pub device_controls: SavedControls,
 }
 
 impl Default for Settings {
@@ -47,6 +57,9 @@ impl Default for Settings {
             device_names: BTreeMap::new(),
             language: "system".into(),
             show_offline: false,
+            reapply_controls: true,
+            experimental_controls: false,
+            device_controls: SavedControls::new(),
         }
     }
 }
@@ -59,6 +72,7 @@ impl Settings {
             self.language = "system".into();
         }
         self.device_names.retain(|k, v| !k.is_empty() && !v.trim().is_empty());
+        self.device_controls.retain(|k, v| !k.is_empty() && !v.is_empty());
         self
     }
 

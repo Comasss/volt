@@ -34,6 +34,51 @@ export interface Device {
   battery: BatteryReading | null;
   lastRead: number | null;
   low: boolean;
+  /** Hay ajustes que personalizar (DPI, luces, reposo, audio…). */
+  configurable: boolean;
+}
+
+// ---- Controles configurables (src-tauri/src/controls.rs) ----
+
+export type ControlSection = "pointer" | "lighting" | "power" | "audio";
+/** Cuánto se puede confiar en el protocolo del control. */
+export type ControlTrust = "reference" | "sibling" | "experimental";
+/** Booleano, número, color `#rrggbb` o lista de bandas. */
+export type ControlValue = boolean | number | string | number[];
+
+interface ControlBase {
+  id: string;
+  section: ControlSection;
+  label: string;
+  hint: string | null;
+  /** `null` si el ajuste se puede escribir pero no leer. */
+  value: ControlValue | null;
+  trust: ControlTrust;
+  /** El dispositivo lo olvida al apagarse; Volt lo guarda y lo reaplica. */
+  volatile: boolean;
+}
+
+export type Control = ControlBase &
+  (
+    | { type: "range"; min: number; max: number; step: number; unit: string; presets: number[] }
+    | { type: "choice"; options: { value: number; label: string }[] }
+    | { type: "toggle" }
+    | { type: "color" }
+    | {
+        type: "bands";
+        labels: string[];
+        min: number;
+        max: number;
+        unit: string;
+        presets: { label: string; values: number[] }[];
+      }
+  );
+
+export interface DeviceControls {
+  controls: Control[];
+  /** De dónde sale el protocolo y qué se ha verificado. */
+  source: string;
+  notes: string[];
 }
 
 export type Theme = "system" | "light" | "dark";
@@ -49,6 +94,10 @@ export interface Settings {
   deviceNames: Record<string, string>;
   language: "system" | "es" | "en";
   showOffline: boolean;
+  reapplyControls: boolean;
+  experimentalControls: boolean;
+  /** Lo mantiene el backend: huella → (control → valor). */
+  deviceControls: Record<string, Record<string, ControlValue>>;
 }
 
 export interface AppState {

@@ -24,10 +24,15 @@
 //! Solo se habla con los PID de la tabla (`Protocol::Compx`): el mismo VID lo usan
 //! ratones con otros comandos.
 
+use super::compx_cfg::{self as cfg, CfgError, LedConfig};
+use crate::controls::{choice, Control, DeviceControls, Kind, Section, Trust, Value};
 use crate::device_ids::{self, Protocol};
+use crate::i18n::tr;
 use crate::hid::{interface_key, short_hash, HidEntry};
 use crate::model::{BatteryReading, ChargeState, Connection, DeviceInfo, DeviceKind};
-use crate::provider::{DeviceProvider, ListenEvent, ListenSpec, PollContext, ProviderError};
+use crate::provider::{
+    Capabilities, DeviceProvider, ListenEvent, ListenSpec, PollContext, ProviderError,
+};
 use hidapi::HidDevice;
 use std::collections::HashMap;
 use std::ffi::CString;
@@ -65,6 +70,9 @@ pub struct CompxProvider {
     cache: HashMap<String, (Instant, BatteryReading)>,
     /// Lecturas hechas en `discover` para devolver en `battery`.
     results: HashMap<String, Result<BatteryReading, ProviderError>>,
+    /// Tabla de paletas de cada teclado (512 bytes). Leerla son 35 paquetes por
+    /// radio, así que se lee una vez y se actualiza con lo que se escribe.
+    tables: HashMap<String, Vec<u8>>,
 }
 
 impl CompxProvider {
@@ -75,8 +83,84 @@ impl CompxProvider {
             models: HashMap::new(),
             cache: HashMap::new(),
             results: HashMap::new(),
+            tables: HashMap::new(),
         }
     }
+
+    fn open(&self, ctx: &PollContext, device: &DeviceInfo) -> Result<HidDevice, ProviderError> {
+        let hid = ctx.hid.ok_or(ProviderError::NoResponse)?;
+        let path = self.paths.get(&device.id).ok_or(ProviderError::NoResponse)?;
+        hid.open(path)
+            .map_err(|e| ProviderError::Busy(format!("no se pudo abrir ({e})")))
+    }
+}
+
+fn cfg_err(e: CfgError) -> ProviderError {
+    match e {
+        CfgError::Io(s) => ProviderError::Io(s),
+        CfgError::Asleep => ProviderError::Offline { last: None },
+        CfgError::Timeout => ProviderError::NoResponse,
+        CfgError::Bad(s) => ProviderError::Protocol(s.into()),
+    }
+}
+
+/// Bloque de configuración, solo si tiene la forma que se sabe editar.
+fn read_valid_led(dev: &HidDevice) -> Result<LedConfig, ProviderError> {
+    let led = cfg::read_led(dev).map_err(cfg_err)?;
+    if !led.is_valid() {
+        log::warn!("compx: bloque de configuración sin las marcas esperadas: {:02x?}", &led.0[..]);
+        return Err(ProviderError::Unsupported(
+            tr(
+                "este teclado guarda su configuración en un formato que Volt no conoce; no se toca nada",
+                "this keyboard stores its settings in a layout Volt does not know; nothing is written",
+            )
+            .into(),
+        ));
+    }
+    Ok(led)
+}
+
+/// Nombres de los efectos según la herramienta del fabricante del Attack Shark
+/// X87. En otros teclados de la familia el orden puede variar: por eso llevan el
+/// número delante.
+const EFFECTS: [(&str, &str); 18] = [
+    ("FIJO", "STATIC"),
+    ("RESPIRACIÓN", "BREATHING"),
+    ("ARCOÍRIS", "RAINBOW"),
+    ("DESTELLO", "FLASH AWAY"),
+    ("GOTAS", "RAINDROPS"),
+    ("RUEDA ARCOÍRIS", "RAINBOW WHEEL"),
+    ("ONDAS", "RIPPLES"),
+    ("ESTRELLAS", "STARS"),
+    ("SOMBRA", "SHADOW"),
+    ("SERPIENTE", "SNAKE"),
+    ("NEÓN", "NEON"),
+    ("REACTIVO", "REACTIVE"),
+    ("ONDA SENOIDAL", "SINE WAVE"),
+    ("BARRIDO", "SCANNING"),
+    ("MOLINO", "WINDMILL"),
+    ("CASCADA", "WATERFALL"),
+    ("FLORECER", "BLOSSOMING"),
+    ("TORMENTA", "STORM"),
+];
+
+/// Tiempos de reposo que ofrece la app del fabricante (segundos); 0 = nunca.
+const SLEEP_PRESETS: [u32; 11] = [0, 30, 60, 90, 120, 180, 240, 300, 600, 900, 1200];
+
+fn sleep_label(secs: u32) -> String {
+    match secs {
+        0 => tr("NUNCA", "NEVER").into(),
+        s if s < 60 => format!("{s} S"),
+        s if s % 60 == 0 => format!("{} MIN", s / 60),
+        s => format!("{:.1} MIN", s as f32 / 60.0),
+    }
+}
+
+fn level(v: &Value, max: u8) -> Result<u8, ProviderError> {
+    v.as_int()
+        .filter(|n| (0..=max as i64).contains(n))
+        .map(|n| n as u8)
+        .ok_or_else(|| ProviderError::Protocol("valor fuera de rango".into()))
 }
 
 fn checksum(b: &[u8]) -> u8 {
@@ -311,6 +395,209 @@ impl DeviceProvider for CompxProvider {
             parser: Box::new(|r| parse_push(r).map(ListenEvent::Reading)),
             silence: None,
         })
+    }
+
+    fn capabilities(&self, _device: &DeviceInfo) -> Capabilities {
+        Capabilities {
+            lighting: true,
+            sleep: true,
+            ..Capabilities::BATTERY_ONLY
+        }
+    }
+
+    fn controls(&mut self, ctx: &PollContext, device: &DeviceInfo) -> Result<DeviceControls, ProviderError> {
+        let dev = self.open(ctx, device)?;
+        let led = read_valid_led(&dev)?;
+        log::debug!("compx: configuración {:02x?}", &led.0[..]);
+        let mut notes = Vec::new();
+        let mut controls = Vec::new();
+
+        let effect = led.effect();
+        let mut options: Vec<(i64, String)> = EFFECTS
+            .iter()
+            .enumerate()
+            .map(|(i, (es, en))| (i as i64 + 1, format!("{:02} · {}", i + 1, tr(es, en))))
+            .collect();
+        if effect == cfg::EFFECT_CUSTOM {
+            options.push((effect as i64, tr("21 · POR TECLA", "21 · PER KEY").into()));
+        } else if !(1..=18).contains(&effect) {
+            options.push((effect as i64, format!("{effect:02} · ?")));
+        }
+        controls.push(
+            Control::new("light.effect", Section::Lighting, tr("EFECTO", "EFFECT"), choice(options), Some(Value::Int(effect as i64)))
+                .trust(Trust::Sibling)
+                .hint(tr(
+                    "Los nombres son los del Attack Shark X87; en tu teclado el orden puede ser otro.",
+                    "Names come from the Attack Shark X87; the order may differ on your keyboard.",
+                )),
+        );
+
+        let level_kind = || Kind::Range { min: 0, max: cfg::MAX_LEVEL as i64, step: 1, unit: "", presets: vec![] };
+        if let (Some(b), Some(sp), Some(color)) = (led.brightness(), led.speed(), led.color()) {
+            controls.push(
+                Control::new("light.brightness", Section::Lighting, tr("BRILLO", "BRIGHTNESS"), level_kind(), Some(Value::Int(b as i64)))
+                    .trust(Trust::Sibling)
+                    .hint(tr("0 apaga las luces. Se guarda por efecto.", "0 turns the lights off. Stored per effect.")),
+            );
+            controls.push(
+                Control::new("light.speed", Section::Lighting, tr("VELOCIDAD", "SPEED"), level_kind(), Some(Value::Int(sp as i64)))
+                    .trust(Trust::Sibling),
+            );
+            let mut palette: Vec<(i64, String)> = (0..cfg::PALETTE_COLORS as i64).map(|i| (i, format!("{}", i + 1))).collect();
+            palette.push((cfg::COLOR_RANDOM as i64, tr("MULTICOLOR", "MULTICOLOUR").into()));
+            controls.push(
+                Control::new("light.palette", Section::Lighting, tr("COLOR DE LA PALETA", "PALETTE COLOUR"), choice(palette), Some(Value::Int(color as i64)))
+                    .trust(Trust::Sibling)
+                    .hint(tr(
+                        "Cada efecto tiene 7 colores guardados en el teclado.",
+                        "Each effect has 7 colours stored in the keyboard.",
+                    )),
+            );
+
+            // La tabla de paletas: solo hace falta para enseñar y editar el color.
+            if !self.tables.contains_key(&device.id) {
+                match cfg::read_rgb_table(&dev) {
+                    Ok(t) => {
+                        self.tables.insert(device.id.clone(), t);
+                    }
+                    Err(e) => {
+                        log::info!("compx: no se pudo leer la tabla de paletas: {e:?}");
+                        notes.push(
+                            tr(
+                                "No se pudo leer la tabla de colores del teclado: el color personalizado no está disponible.",
+                                "Could not read the keyboard colour table: custom colour is unavailable.",
+                            )
+                            .into(),
+                        );
+                    }
+                }
+            }
+            if let (Some(table), Some(slot)) = (self.tables.get(&device.id), led.slot()) {
+                // Con «multicolor» se enseña (y se editaría) el último color.
+                let index = color.min(cfg::PALETTE_COLORS - 1);
+                let o = cfg::palette_offset(slot, index);
+                controls.push(
+                    Control::new(
+                        "light.color",
+                        Section::Lighting,
+                        tr("COLOR PERSONALIZADO", "CUSTOM COLOUR"),
+                        Kind::Color,
+                        Some(Value::rgb(table[o], table[o + 1], table[o + 2])),
+                    )
+                    .trust(Trust::Experimental)
+                    .hint(tr(
+                        "Sustituye el color seleccionado de la paleta de este efecto. Reescribe la tabla de colores del teclado, algo que no se ha verificado por radio en ningún modelo: si el resultado no es el esperado, un restablecimiento de fábrica del teclado recupera las paletas.",
+                        "Replaces the selected palette colour of this effect. It rewrites the keyboard colour table, which has not been verified over the air on any model: if the result is wrong, a factory reset of the keyboard restores the palettes.",
+                    )),
+                );
+            }
+        } else {
+            notes.push(
+                tr(
+                    "El efecto activo no está en la tabla conocida: brillo, velocidad y color no se pueden ajustar hasta elegir otro.",
+                    "The active effect is not in the known table: brightness, speed and colour cannot be set until you pick another one.",
+                )
+                .into(),
+            );
+        }
+
+        let secs = led.sleep_secs();
+        let mut times: Vec<u32> = SLEEP_PRESETS.to_vec();
+        if !times.contains(&secs) {
+            times.push(secs);
+            times[1..].sort_unstable();
+        }
+        controls.push(
+            Control::new(
+                "power.sleep",
+                Section::Power,
+                tr("REPOSO Y APAGADO DE LUCES", "SLEEP AND LIGHTS OFF"),
+                choice(times.into_iter().map(|s| (s as i64, sleep_label(s)))),
+                Some(Value::Int(secs as i64)),
+            )
+            .trust(Trust::Sibling)
+            .hint(tr(
+                "Tiempo sin pulsar teclas hasta que el teclado se duerme y apaga las luces (solo por 2.4G).",
+                "Idle time before the keyboard sleeps and turns its lights off (2.4G only).",
+            )),
+        );
+
+        Ok(DeviceControls {
+            controls,
+            source: tr(
+                "Protocolo de attack_shark_x87_rs (MIT), verificado por su autor en un Attack Shark X87 con este mismo receptor. Sin probar en este teclado: Volt lee su configuración, cambia solo el byte del ajuste y comprueba que se ha guardado.",
+                "Protocol from attack_shark_x87_rs (MIT), verified by its author on an Attack Shark X87 with this same receiver. Untested on this keyboard: Volt reads its settings, changes only the byte of the setting and checks it was stored.",
+            )
+            .into(),
+            notes,
+        })
+    }
+
+    fn set_control(
+        &mut self,
+        ctx: &PollContext,
+        device: &DeviceInfo,
+        control: &str,
+        value: &Value,
+    ) -> Result<(), ProviderError> {
+        let dev = self.open(ctx, device)?;
+        let mut led = read_valid_led(&dev)?;
+        let unknown_effect = || ProviderError::Unsupported(tr("efecto activo desconocido", "unknown active effect").into());
+        match control {
+            "light.effect" => {
+                let id = value
+                    .as_int()
+                    .filter(|n| (1..=18).contains(n) || *n == cfg::EFFECT_CUSTOM as i64)
+                    .ok_or_else(|| ProviderError::Protocol("efecto fuera de rango".into()))?;
+                led.set_effect(id as u8);
+            }
+            "light.brightness" => {
+                if !led.set_brightness(level(value, cfg::MAX_LEVEL)?) {
+                    return Err(unknown_effect());
+                }
+            }
+            "light.speed" => {
+                if !led.set_speed(level(value, cfg::MAX_LEVEL)?) {
+                    return Err(unknown_effect());
+                }
+            }
+            "light.palette" => {
+                if !led.set_color(level(value, cfg::COLOR_RANDOM)?) {
+                    return Err(unknown_effect());
+                }
+            }
+            "power.sleep" => {
+                let secs = value
+                    .as_int()
+                    .filter(|n| (0..=255 * 30).contains(n))
+                    .ok_or_else(|| ProviderError::Protocol("tiempo fuera de rango".into()))?;
+                led.set_sleep_secs(secs as u32);
+            }
+            "light.color" => {
+                let (r, g, b) = value
+                    .as_rgb()
+                    .ok_or_else(|| ProviderError::Protocol("color no válido".into()))?;
+                let slot = led.slot().ok_or_else(unknown_effect)?;
+                let index = led.color().unwrap_or(0).min(cfg::PALETTE_COLORS - 1);
+                let mut table = match self.tables.get(&device.id) {
+                    Some(t) => t.clone(),
+                    None => cfg::read_rgb_table(&dev).map_err(cfg_err)?,
+                };
+                let o = cfg::palette_offset(slot, index);
+                table[o..o + 3].copy_from_slice(&[r, g, b]);
+                // Si la escritura falla no se sabe qué tiene el teclado: releer la próxima vez.
+                self.tables.remove(&device.id);
+                cfg::write_rgb_table(&dev, &table).map_err(cfg_err)?;
+                self.tables.insert(device.id.clone(), table);
+                // Con «multicolor» el color no se vería: pasar al que se acaba de escribir.
+                if led.color() == Some(index) {
+                    return Ok(());
+                }
+                led.set_color(index);
+            }
+            other => return Err(ProviderError::Unsupported(other.into())),
+        }
+        cfg::write_led(&dev, &led).map_err(cfg_err)
     }
 
     /// Las respuestas del receptor compartido a veces se pierden: un solo

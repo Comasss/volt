@@ -1,6 +1,7 @@
 //! Comandos invocables desde el frontend. Ninguno sondea hardware por sí mismo:
 //! o devuelven el último estado o piden algo al hilo del gestor.
 
+use crate::controls::{DeviceControls, Value};
 use crate::manager::{Command, HidRow, Shared, StatePayload};
 use crate::settings::Settings;
 use std::sync::{mpsc, Arc};
@@ -29,6 +30,9 @@ pub fn update_settings(
     settings: Settings,
 ) -> Result<Settings, String> {
     let mut settings = settings.sanitized();
+    // Los valores guardados de los dispositivos los mantiene el gestor: lo que
+    // traiga la interfaz puede estar atrasado.
+    settings.device_controls = shared.settings().device_controls;
 
     let autolaunch = app.autolaunch();
     let enabled = autolaunch.is_enabled().unwrap_or(false);
@@ -84,6 +88,42 @@ pub fn rename_device(
     shared.set_settings(settings.clone());
     shared.send(Command::Reconfigure);
     Ok(settings)
+}
+
+/// Hablar con el hardware puede tardar (un teclado dormido tarda en despertar).
+const CONTROL_TIMEOUT: Duration = Duration::from_secs(25);
+
+fn busy() -> String {
+    crate::i18n::tr(
+        "El dispositivo tarda en contestar; inténtalo de nuevo",
+        "The device is slow to answer; try again",
+    )
+    .into()
+}
+
+/// Lee del dispositivo lo que se puede personalizar y su valor actual.
+#[tauri::command]
+pub async fn device_controls(shared: State<'_, Arc<Shared>>, device: String) -> Result<DeviceControls, String> {
+    let (tx, rx) = mpsc::channel();
+    if !shared.send(Command::Controls(device, tx)) {
+        return Err("el gestor no está activo".into());
+    }
+    rx.recv_timeout(CONTROL_TIMEOUT).map_err(|_| busy())?
+}
+
+/// Escribe un control y devuelve la lista releída del dispositivo.
+#[tauri::command]
+pub async fn set_device_control(
+    shared: State<'_, Arc<Shared>>,
+    device: String,
+    control: String,
+    value: Value,
+) -> Result<DeviceControls, String> {
+    let (tx, rx) = mpsc::channel();
+    if !shared.send(Command::SetControl { device, control, value, reply: tx }) {
+        return Err("el gestor no está activo".into());
+    }
+    rx.recv_timeout(CONTROL_TIMEOUT).map_err(|_| busy())?
 }
 
 #[tauri::command]
