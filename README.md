@@ -363,7 +363,11 @@ Salida real en este equipo:
     que el teclado no entiende.
 - Una lectura sin respuesta no cambia el estado: el teclado solo se da por apagado tras
   tres seguidas, para que no parpadee entre «en línea» y «desconectado» al dormitar.
-- Por Bluetooth («BT5.0 KB») lo cubre el provider Bluetooth.
+- *Personalizar* lee la configuración por el receptor. Si el teclado está dormido no
+  contesta: Volt le manda la consulta de batería de su variante (que lo despierta) y
+  vuelve a leer. Los paquetes que llegan bien se guardan entre reintentos.
+- Por Bluetooth («BT5.0 KB») lo cubre el provider Bluetooth, que solo ve la batería:
+  luces y reposo necesitan el receptor 2.4G.
 
 **Bluetooth**
 - La fuente principal es el valor que el propio Windows guarda en el dispositivo PnP:
