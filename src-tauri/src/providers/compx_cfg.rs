@@ -217,13 +217,16 @@ pub fn read_block(dev: &HidDevice, cmd: u8, sub: u8, len: usize, min: usize) -> 
 fn read_inner(dev: &HidDevice, cmd: u8, sub: u8, len: usize, min: usize) -> Result<Vec<u8>, CfgError> {
     let mut last = CfgError::Timeout;
     let mut buf = [0u8; 64];
+    // Los paquetes buenos se conservan entre peticiones (como hace
+    // attack_shark_x87_rs): por radio se pierde alguno a menudo, y exigir los 10
+    // del bloque en una sola tanda hacía fallar lecturas que se podían completar.
+    let mut asm = Assembler::new(cmd, sub, len, min);
     // La primera petición a veces solo despierta el enlace.
     for attempt in 0..4 {
         if attempt > 0 {
             sleep(Duration::from_millis(150));
         }
         drain(dev);
-        let mut asm = Assembler::new(cmd, sub, len, min);
         // Petición de lectura: longitud 0 y solo el `sub` en el byte 4.
         let mut req = build_packet(cmd, 1, 0, sub, &[]);
         req[4] = sub << 4;
@@ -245,6 +248,8 @@ fn read_inner(dev: &HidDevice, cmd: u8, sub: u8, len: usize, min: usize) -> Resu
                 Ok(Some(block)) => return Ok(block),
                 Ok(None) => {}
                 Err(e) => {
+                    // Datos contradictorios o rotos: se empieza de cero.
+                    asm = Assembler::new(cmd, sub, len, min);
                     last = e;
                     break;
                 }

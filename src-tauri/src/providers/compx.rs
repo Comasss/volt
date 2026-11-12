@@ -76,6 +76,47 @@ pub struct CompxProvider {
 }
 
 impl CompxProvider {
+    /// Lee el bloque de configuración despertando antes al teclado si hace falta.
+    ///
+    /// Los teclados de este receptor se duermen a los pocos segundos sin pulsar
+    /// teclas (el Redragon UCAL Pro, enseguida). Dormido, el receptor no reenvía la
+    /// petición de configuración y la lectura acaba en «no responde», aunque la
+    /// batería se viera bien un momento antes. La consulta de batería de su
+    /// variante (0x05 o 0x4A) sí lo despierta (por eso enciende las luces), así que
+    /// si la primera lectura falla se manda esa consulta y se vuelve a leer.
+    fn read_led_awake(&mut self, dev: &HidDevice, device: &DeviceInfo) -> Result<LedConfig, ProviderError> {
+        match cfg::read_led(dev) {
+            Ok(led) => return check_valid(led),
+            Err(CfgError::Timeout | CfgError::Asleep | CfgError::Bad(_)) => {}
+            Err(e) => return Err(cfg_err(e)),
+        }
+        log::info!("compx: {} no contestó a la lectura de configuración; se despierta y se reintenta", device.id);
+        let mut model = self.models.get(&device.id).cloned();
+        let reply = ask(dev, self.variants.get(&device.id).copied(), &mut model)?;
+        if let Some(m) = model {
+            self.models.insert(device.id.clone(), m);
+        }
+        let Some((_, _, push)) = reply else {
+            // Ni la consulta de batería contesta: apagado, dormido del todo o lejos.
+            return Err(ProviderError::Offline { last: None });
+        };
+        self.variants
+            .insert(device.id.clone(), if push { Variant::B } else { Variant::A });
+        // Que el enlace termine de levantarse antes de pedir 10 paquetes seguidos.
+        sleep(Duration::from_millis(250));
+        match cfg::read_led(dev) {
+            Ok(led) => check_valid(led),
+            Err(CfgError::Timeout) => Err(ProviderError::Unsupported(
+                tr(
+                    "el teclado contesta a la batería pero no a la lectura de su configuración de luces; su firmware puede usar otros comandos",
+                    "the keyboard answers the battery query but not the lighting settings read; its firmware may use other commands",
+                )
+                .into(),
+            )),
+            Err(e) => Err(cfg_err(e)),
+        }
+    }
+
     pub fn new() -> Self {
         Self {
             paths: HashMap::new(),
@@ -105,8 +146,7 @@ fn cfg_err(e: CfgError) -> ProviderError {
 }
 
 /// Bloque de configuración, solo si tiene la forma que se sabe editar.
-fn read_valid_led(dev: &HidDevice) -> Result<LedConfig, ProviderError> {
-    let led = cfg::read_led(dev).map_err(cfg_err)?;
+fn check_valid(led: LedConfig) -> Result<LedConfig, ProviderError> {
     if !led.is_valid() {
         log::warn!("compx: bloque de configuración sin las marcas esperadas: {:02x?}", &led.0[..]);
         return Err(ProviderError::Unsupported(
@@ -407,7 +447,7 @@ impl DeviceProvider for CompxProvider {
 
     fn controls(&mut self, ctx: &PollContext, device: &DeviceInfo) -> Result<DeviceControls, ProviderError> {
         let dev = self.open(ctx, device)?;
-        let led = read_valid_led(&dev)?;
+        let led = self.read_led_awake(&dev, device)?;
         log::debug!("compx: configuración {:02x?}", &led.0[..]);
         let mut notes = Vec::new();
         let mut controls = Vec::new();
@@ -541,7 +581,7 @@ impl DeviceProvider for CompxProvider {
         value: &Value,
     ) -> Result<(), ProviderError> {
         let dev = self.open(ctx, device)?;
-        let mut led = read_valid_led(&dev)?;
+        let mut led = self.read_led_awake(&dev, device)?;
         let unknown_effect = || ProviderError::Unsupported(tr("efecto activo desconocido", "unknown active effect").into());
         match control {
             "light.effect" => {

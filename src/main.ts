@@ -246,6 +246,9 @@ function sheet(d: Device, index: number): string {
 
   const code = [d.model, d.slot != null ? `SLOT ${pad(d.slot)}` : null].filter(Boolean).join(" · ");
   const detail = d.status.state === "unavailable" ? d.status.detail : null;
+  // Por Bluetooth Volt solo ve la batería que guarda Windows: avisar de que los
+  // ajustes (luces, reposo…) necesitan el receptor del fabricante.
+  const btOnly = d.provider === "bluetooth" && ["keyboard", "mouse"].includes(d.kind);
 
   return `<article class="sheet ${d.low ? "is-low" : ""} st-${st}" data-id="${esc(d.id)}">
     <header class="sheet-head">
@@ -263,6 +266,7 @@ function sheet(d: Device, index: number): string {
     </div>
     ${meter(d)}
     ${detail ? `<div class="sheet-note">${icon("warn")}<span>${esc(detail)}</span></div>` : ""}
+    ${btOnly ? `<div class="sheet-note">${icon("sliders")}<span>${t("btNoControls")}</span></div>` : ""}
     <dl class="specs">
       <div><dt>${icon(LINK_ICON[d.connection])}${t("specLink")}</dt><dd>${t(`link_${d.connection}` as Key)}</dd></div>
       <div><dt>${icon("battery")}${t("specPower")}</dt><dd>${power}${d.battery?.voltageMv ? ` · ${(d.battery.voltageMv / 1000).toFixed(2)} V` : ""}</dd></div>
